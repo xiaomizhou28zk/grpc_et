@@ -51,12 +51,15 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 
 	_, err = io.Copy(file, picture)
 	if err != nil {
+		fmt.Printf("UploadFile 1 err:%s", err)
 		log.Log.Errorf("err:%s", err)
 	}
 	rsp.Url = config.Config.PictureUrl + handler.Filename
 	msg, _ := json.Marshal(rsp)
 	_, err = w.Write(msg)
 	if err != nil {
+		fmt.Printf("UploadFile 2 err:%s", err)
 		log.Log.Errorf("err:%s", err)
 	}
+	fmt.Printf("UploadFile [-]")
 }
