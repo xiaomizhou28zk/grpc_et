@@ -19,7 +19,7 @@ func getClient() (pb.EntryTaskClient, *common.ConnRes, error) {
 		return nil, nil, err
 	}
 	cli := pb.NewEntryTaskClient(conn.(grpc.ClientConnInterface))
-	return cli, nil, nil
+	return cli, &conn, nil
 }
 
 // getUserInfoRpc 获取用户信息
