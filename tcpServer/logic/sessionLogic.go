@@ -1,13 +1,13 @@
 package logic
 
 import (
-	"context"
 	"entryTask/common/log"
 	"entryTask/protocal/entry_task/pb"
 	"entryTask/tcpServer/Dao"
 	"entryTask/tcpServer/config"
 
 	"github.com/garyburd/redigo/redis"
+	"golang.org/x/net/context"
 	"google.golang.org/protobuf/proto"
 )
 

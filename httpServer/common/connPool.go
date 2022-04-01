@@ -4,9 +4,10 @@ import (
 	"entryTask/httpServer/config"
 	"errors"
 	"fmt"
-	"net"
 	"sync"
 	"time"
+
+	"google.golang.org/grpc"
 )
 
 type ConnRes interface {
@@ -135,6 +136,10 @@ var MyPool *ConnPool
 func InitPool() {
 	addr := fmt.Sprintf("%s:%d", config.Config.RpcServerIP, config.Config.RpcServerPort)
 	MyPool, _ = NewConnPool(func() (ConnRes, error) {
-		return net.Dial("tcp", addr)
+		conn, err := grpc.Dial(addr, grpc.WithInsecure())
+		if err != nil {
+			return nil, err
+		}
+		return conn, nil
 	}, 4, time.Second*time.Duration(config.Config.ConnTimeOut))
 }

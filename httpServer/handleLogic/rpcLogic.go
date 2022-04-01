@@ -1,45 +1,39 @@
 package handleLogic
 
 import (
-	"encoding/gob"
+	"context"
 	"encoding/json"
 	"entryTask/common/log"
-	"entryTask/common/zrpc"
 	"entryTask/httpServer/common"
-	"entryTask/protocal"
+	"entryTask/protocal/entry_task/pb"
 	"fmt"
-	"net"
+
+	"google.golang.org/grpc"
+	"google.golang.org/protobuf/proto"
 )
 
-func init() {
-	gob.Register(protocal.GetUserInfoRequest{})
-	gob.Register(protocal.GetUserInfoReply{})
-	gob.Register(protocal.UpdateUserInfoRequest{})
-	gob.Register(protocal.UpdateUserInfoReplay{})
-	gob.Register(protocal.GetSessionInfoRequest{})
-	gob.Register(protocal.GetSessionInfoReply{})
-	gob.Register(protocal.SetSessionInfoRequest{})
-	gob.Register(protocal.SetSessionInfoReply{})
-	gob.Register(protocal.RefreshSessionRequest{})
-	gob.Register(protocal.RefreshSessionReply{})
+func getClient() (pb.EntryTaskClient, *common.ConnRes, error) {
+	conn, err := common.MyPool.Get()
+	if err != nil {
+		log.Log.Errorf("get conn err:%s", err)
+		return nil, nil, err
+	}
+	cli := pb.NewEntryTaskClient(conn.(grpc.ClientConnInterface))
+	return cli, nil, nil
 }
 
 // getUserInfoRpc 获取用户信息
 func getUserInfoRpc(uid string) (userInfo common.UserInfo, err error) {
-
-	conn, err := common.MyPool.Get()
+	cli, conn, err := getClient()
 	if err != nil {
 		log.Log.Errorf("get conn err:%s", err)
 		return
 	}
-	cli := zrpc.NewClient(conn.(net.Conn))
-
-	cli.Call("GetUserInfo", &protocal.GetUserInfo)
-	req := protocal.GetUserInfoRequest{
-		Uid: uid,
+	req := &pb.GetUserInfoRequest{
+		Uid: proto.String(uid),
 	}
 
-	u, err := protocal.GetUserInfo(req)
+	resp, err := cli.GetUserInfo(context.Background(), req)
 	if err != nil {
 		log.Log.Errorf("GetUserInfo err:%s", err)
 		fmt.Println("GetUserInfo err:", err)
@@ -48,43 +42,41 @@ func getUserInfoRpc(uid string) (userInfo common.UserInfo, err error) {
 
 	userInfo = common.UserInfo{
 		UID:      uid,
-		Nick:     u.Nick,
-		Picture:  u.Pic,
-		PassWord: u.Pwd,
+		Nick:     resp.GetNick(),
+		Picture:  resp.GetPic(),
+		PassWord: resp.GetPwd(),
 	}
 
-	_ = common.MyPool.Put(conn)
+	_ = common.MyPool.Put(*conn)
 	return userInfo, nil
 }
 
 // updateUserInfoRpc 更新用户信息
 func updateUserInfoRpc(info common.UserInfo) error {
-	conn, err := common.MyPool.Get()
+	cli, conn, err := getClient()
 	if err != nil {
 		log.Log.Errorf("get conn err:%s", err)
 		return err
 	}
-	cli := zrpc.NewClient(conn.(net.Conn))
 
-	cli.Call("UpdateUserInfo", &protocal.UpdateUserInfo)
-	req := protocal.UpdateUserInfoRequest{
-		Uid:  info.UID,
-		Nick: info.Nick,
-		Pic:  info.Picture,
+	req := &pb.UpdateUserInfoRequest{
+		Uid:  proto.String(info.UID),
+		Nick: proto.String(info.Nick),
+		Pic:  proto.String(info.Picture),
 	}
 
-	r, err := protocal.UpdateUserInfo(req)
+	resp, err := cli.UpdateUserInfo(context.Background(), req)
 	if err != nil {
 		log.Log.Errorf("err:%s", err)
 		return err
 	}
 
-	if r.Ret != 0 {
-		log.Log.Errorf("err ret:%d", r.Ret)
-		return fmt.Errorf("ret:%d", r.Ret)
+	if resp.GetRet() != 0 {
+		log.Log.Errorf("err ret:%d", resp.GetRet())
+		return fmt.Errorf("ret:%d", resp.GetRet())
 	}
 
-	_ = common.MyPool.Put(conn)
+	_ = common.MyPool.Put(*conn)
 
 	return nil
 }
@@ -92,65 +84,57 @@ func updateUserInfoRpc(info common.UserInfo) error {
 // getSessionInfo 获取会话信息
 func getSessionInfo(sessionID string) (sessionInfo common.SessionInfo, err error) {
 	sessionInfo = common.SessionInfo{}
-
-	conn, err := common.MyPool.Get()
+	cli, conn, err := getClient()
 	if err != nil {
 		log.Log.Errorf("get conn err:%s", err)
-		fmt.Println("session get con err", err)
-		return
+		return sessionInfo, err
 	}
-
-	cli := zrpc.NewClient(conn.(net.Conn))
-
-	cli.Call("GetSessionInfo", &protocal.GetSessionInfo)
-	req := protocal.GetSessionInfoRequest{
-		SessionID: sessionID,
+	req := &pb.GetSessionInfoRequest{
+		SessionId: proto.String(sessionID),
 	}
-
-	r, err := protocal.GetSessionInfo(req)
+	resp, err := cli.GetSessionInfo(context.Background(), req)
 	if err != nil {
 		log.Log.Errorf("err:%s", err)
 		return
 	}
+	if resp.GetRet() != 0 {
+		log.Log.Errorf("err ret:%d", resp.GetRet())
+		return sessionInfo, fmt.Errorf("ret:%d", resp.GetRet())
+	}
 
-	_ = json.Unmarshal([]byte(r.SessionInfo), &sessionInfo)
+	_ = json.Unmarshal([]byte(resp.GetSessionInfo()), &sessionInfo)
 	sessionInfo.SessionID = sessionID
 
-	_ = common.MyPool.Put(conn)
+	_ = common.MyPool.Put(*conn)
 
 	return sessionInfo, nil
 }
 
 // setSessionRpc 设置会话
 func setSessionRpc(sessionID string, info common.SessionInfo) {
-	conn, err := common.MyPool.Get()
+	cli, conn, err := getClient()
 	if err != nil {
 		log.Log.Errorf("get conn err:%s", err)
-		fmt.Println("session get con err", err)
 		return
 	}
-
-	cli := zrpc.NewClient(conn.(net.Conn))
-
-	cli.Call("SetSessionInfo", &protocal.SetSessionInfo)
 	infoStr, _ := json.Marshal(info)
-	req := protocal.SetSessionInfoRequest{
-		SessionID:   sessionID,
-		SessionInfo: string(infoStr),
+	req := &pb.SetSessionInfoRequest{
+		SessionId:   proto.String(sessionID),
+		SessionInfo: proto.String(string(infoStr)),
 	}
-	r, err := protocal.SetSessionInfo(req)
+	resp, err := cli.SetSessionInfo(context.Background(), req)
 	if err != nil {
 		fmt.Printf("session err:%s   uid:%s\n", err, info.UID)
 		log.Log.Errorf("err:%s", err)
 		return
 	}
-	if r.Ret != 0 {
-		log.Log.Errorf("err ret:%d", r.Ret)
+	if resp.GetRet() != 0 {
+		log.Log.Errorf("err ret:%d", resp.GetRet())
 		return
 	}
 	log.Log.Debugf("set session ok")
 
-	err = common.MyPool.Put(conn)
+	err = common.MyPool.Put(*conn)
 	if err != nil {
 		fmt.Println("session put err:", err)
 	}
@@ -158,27 +142,23 @@ func setSessionRpc(sessionID string, info common.SessionInfo) {
 
 // refreshSessionRpc 刷新会话
 func refreshSessionRpc(sessionID string) {
-	conn, err := common.MyPool.Get()
+	cli, conn, err := getClient()
 	if err != nil {
 		log.Log.Errorf("get conn err:%s", err)
 		return
 	}
-	cli := zrpc.NewClient(conn.(net.Conn))
-
-	cli.Call("RefreshSession", &protocal.RefreshSession)
-
-	req := protocal.RefreshSessionRequest{
-		SessionID: sessionID,
+	req := &pb.RefreshSessionRequest{
+		SessionId: proto.String(sessionID),
 	}
-	r, err := protocal.RefreshSession(req)
+	resp, err := cli.RefreshSession(context.Background(), req)
 	if err != nil {
 		log.Log.Errorf("err:%s", err)
 		return
 	}
-	if r.Ret != 0 {
-		log.Log.Errorf("err ret:%d", r.Ret)
+	if resp.GetRet() != 0 {
+		log.Log.Errorf("err ret:%d", resp.GetRet())
 		return
 	}
 	log.Log.Debugf("refresh session ok")
-	_ = common.MyPool.Put(conn)
+	_ = common.MyPool.Put(*conn)
 }
