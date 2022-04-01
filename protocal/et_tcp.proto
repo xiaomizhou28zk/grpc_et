@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package entry_task;
+option go_package ="entry_task/pb";
+
+message UpdateUserInfoRequest {
+  optional string uid = 1;
+  optional string nick = 2;
+  optional string pic = 3;
+}
+message UpdateUserInfoResponse {
+  optional int32 ret  = 1;
+}
+
+message GetSessionInfoRequest{
+  optional string session_id = 1;
+}
+message GetSessionInfoResponse{
+  optional int32 ret = 1;
+  optional string session_info = 2;
+}
+
+message RefreshSessionRequest {
+  optional string session_id = 1;
+}
+message RefreshSessionResponse {
+  optional int32 ret = 1;
+}
+
+message SetSessionInfoRequest {
+  optional string session_id = 1;
+  optional string session_info = 2;
+}
+message SetSessionInfoResponse {
+  optional int32 ret = 1;
+}
+
+message GetUserInfoRequest {
+  optional string uid = 1;
+}
+message GetUserInfoResponse {
+  optional int32 ret = 1;
+  optional string uid = 2;
+  optional string nick = 3;
+  optional string pic = 4;
+  optional string pwd = 5;
+}
+
+service EntryTask {
+  rpc GetUserInfo (GetUserInfoRequest) returns (GetUserInfoResponse) {}
+  rpc UpdateUserInfo (UpdateUserInfoRequest) returns (UpdateUserInfoResponse) {}
+  rpc GetSessionInfo (GetSessionInfoRequest) returns (GetSessionInfoResponse) {}
+  rpc RefreshSession (RefreshSessionRequest) returns (RefreshSessionResponse) {}
+  rpc SetSessionInfo (SetSessionInfoRequest) returns (SetSessionInfoResponse) {}
+}

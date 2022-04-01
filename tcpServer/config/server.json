@@ -1,0 +1,11 @@
+{
+  "redisAddr": "127.0.0.1:6379",
+  "DBIP": "127.0.0.1",
+  "DBPort": 3306,
+  "DBUserName": "root",
+  "BDPassword": "123456789",
+  "DBName": "user",
+  "DBDriverName": "mysql",
+  "serverAddr": "127.0.0.1:50052",
+  "sessionExpireTime": 180
+}

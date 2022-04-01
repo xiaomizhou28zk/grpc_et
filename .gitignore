@@ -1,0 +1,6 @@
+*.log
+/log/
+http_server
+tcp_server
+.vscode/
+.idea
