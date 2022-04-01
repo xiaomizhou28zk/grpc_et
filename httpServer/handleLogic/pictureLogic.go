@@ -5,7 +5,6 @@ import (
 	"entryTask/common/log"
 	"entryTask/httpServer/common"
 	"entryTask/httpServer/config"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -22,7 +21,7 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 	rsp := &uploadFileRet{Ret: 0}
 	_, status := checkSession(r)
 	if !status {
-		fmt.Println("get session err")
+		log.Log.Errorf("check session err")
 		rsp.Ret = common.InvalidSession
 		rsp.Url = config.Config.LoginPage
 		msg, _ := json.Marshal(rsp)
@@ -40,7 +39,7 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 
 	file, err := os.OpenFile(config.Config.PicturePath+handler.Filename, os.O_WRONLY|os.O_CREATE, 0755)
 	if err != nil {
-		fmt.Println("open file")
+		log.Log.Errorf("open file err:%s", err)
 		return
 	}
 
