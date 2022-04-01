@@ -1,7 +1,7 @@
 {
   "rpcServerIP": "127.0.0.1",
   "rpcServerPort": 50052,
-  "picturePath": "/home/scottk.zhang/work/et/grpc_et/httpServer/picture",
+  "picturePath": "/home/scottk.zhang/work/et/grpc_et/httpServer/picture/",
   "pictureUrl": "http://101.42.251.239:8080/picture/",
   "indexPage": "/home/scottk.zhang/work/et/grpc_et//httpServer/html/index.html",
   "loginPage":"http://101.42.251.239:8080/html/index.html",
