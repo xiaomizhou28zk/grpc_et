@@ -5,7 +5,7 @@ import (
 	"entryTask/common/log"
 	"entryTask/protocal"
 	"entryTask/tcpServer/Dao"
-	pb "github.com/freewebsys/grpc-go-demo/src/helloworld"
+	_ "github.com/xiaomizhou28zk/grpc_et/protocal/pb"
 )
 
 // GetUserInfo 获取用户信息
