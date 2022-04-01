@@ -40,7 +40,7 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("file name:%s   file size:%d", handler.Filename, handler.Size)
+	fmt.Printf("file name:%s   file size:%d  file path:%s\n", handler.Filename, handler.Size, config.Config.PicturePath+handler.Filename)
 
 	file, err := os.OpenFile(config.Config.PicturePath+handler.Filename, os.O_WRONLY|os.O_CREATE, 0755)
 	if err != nil {
