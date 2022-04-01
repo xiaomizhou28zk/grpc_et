@@ -5,6 +5,7 @@ import (
 	"entryTask/common/log"
 	"entryTask/httpServer/common"
 	"entryTask/httpServer/config"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -17,6 +18,8 @@ type uploadFileRet struct {
 
 // UploadFile 上传文件
 func UploadFile(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Printf("UploadFile [+]")
 
 	rsp := &uploadFileRet{Ret: 0}
 	_, status := checkSession(r)
@@ -39,6 +42,7 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 
 	file, err := os.OpenFile(config.Config.PicturePath+handler.Filename, os.O_WRONLY|os.O_CREATE, 0755)
 	if err != nil {
+		fmt.Printf("UploadFile err:%s", err)
 		log.Log.Errorf("open file err:%s", err)
 		return
 	}
