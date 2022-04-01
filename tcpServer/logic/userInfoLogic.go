@@ -39,7 +39,7 @@ func (s *Server) GetUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*
 
 // UpdateUserInfo 更新用户信息
 func (s *Server) UpdateUserInfo(ctx context.Context, req *pb.UpdateUserInfoRequest) (*pb.UpdateUserInfoResponse, error) {
-	log.Log.Debugf("Received uid: %v", req.GetUid())
+	log.Log.Debugf("Received uid: %v, nick:%s, pic:%s", req.GetUid(), req.GetNick(), req.GetPic())
 	rsp := &pb.UpdateUserInfoResponse{}
 	if req.GetNick() == "" && req.GetPic() == "" {
 		rsp.Ret = proto.Int32(-1)
