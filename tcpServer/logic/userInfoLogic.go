@@ -3,94 +3,61 @@ package logic
 import (
 	"context"
 	"entryTask/common/log"
-	"entryTask/protocal"
+	"entryTask/protocal/entry_task/pb"
 	"entryTask/tcpServer/Dao"
-	_ "github.com/xiaomizhou28zk/grpc_et/protocal/pb"
+
+	"google.golang.org/protobuf/proto"
 )
 
 // GetUserInfo 获取用户信息
-func GetUserInfo(in protocal.GetUserInfoRequest) (protocal.GetUserInfoReply, error) {
+func (s *Server) GetUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
 
-	rsp := protocal.GetUserInfoReply{
-		Ret: 0,
-	}
+	rsp := &pb.GetUserInfoResponse{}
 
 	userInfo := Dao.UserInfo{}
 	var err error
-	v, ok := UserCache.Get(in.Uid)
+	v, ok := UserCache.Get(req.GetUid())
 	if ok {
 		userInfo = v.(Dao.UserInfo)
 	} else {
-		userInfo, err = Dao.QueryUserInfo(in.Uid)
+		userInfo, err = Dao.QueryUserInfo(req.GetUid())
 		if err != nil {
-			rsp.Ret = -1
+			rsp.Ret = proto.Int32(-1)
 			return rsp, nil
 		}
-		UserCache.Add(in.Uid, userInfo)
+		UserCache.Add(req.GetUid(), userInfo)
 	}
 
-	rsp.Uid = userInfo.Uid
-	rsp.Nick = userInfo.Nick
-	rsp.Pic = userInfo.Picture
-	rsp.Pwd = userInfo.Password
+	rsp.Uid = proto.String(userInfo.Uid)
+	rsp.Nick = proto.String(userInfo.Nick)
+	rsp.Pic = proto.String(userInfo.Picture)
+	rsp.Pwd = proto.String(userInfo.Password)
 
 	return rsp, nil
 
 }
 
 // UpdateUserInfo 更新用户信息
-func UpdateUserInfo(in protocal.UpdateUserInfoRequest) (protocal.UpdateUserInfoReplay, error) {
-	log.Log.Debugf("Received uid: %v", in.Uid)
-	rsp := protocal.UpdateUserInfoReplay{
-		Ret: 0,
-	}
-	if in.Nick == "" && in.Pic == "" {
-		rsp.Ret = -1
+func (s *Server) UpdateUserInfo(ctx context.Context, req *pb.UpdateUserInfoRequest) (*pb.UpdateUserInfoResponse, error) {
+	log.Log.Debugf("Received uid: %v", req.GetUid())
+	rsp := &pb.UpdateUserInfoResponse{}
+	if req.GetNick() == "" && req.GetPic() == "" {
+		rsp.Ret = proto.Int32(-1)
 		return rsp, nil
 	}
-	err := Dao.UpdateUserInfo(in.Uid, in.Nick, in.Pic)
+	err := Dao.UpdateUserInfo(req.GetUid(), req.GetNick(), req.GetPic())
 	if err != nil {
-		rsp.Ret = -1
+		rsp.Ret = proto.Int32(-1)
 		return rsp, nil
 	}
 
-	v, ok := UserCache.Get(in.Uid)
+	v, ok := UserCache.Get(req.GetUid())
 	if ok {
 		u := v.(Dao.UserInfo)
-		u.Nick = in.Nick
-		u.Picture = in.Pic
-		UserCache.Add(in.Uid, u)
+		u.Nick = req.GetNick()
+		u.Picture = req.GetPic()
+		UserCache.Add(req.GetUid(), u)
 	}
 
 	return rsp, nil
-}
-
-// GetUserInfo 获取用户信息
-func (s *Server)GetUserInfo(ctx context.Context, in *pb.HelloRequest) (protocal.GetUserInfoReply, error) {
-
-	rsp := protocal.GetUserInfoReply{
-		Ret: 0,
-	}
-
-	userInfo := Dao.UserInfo{}
-	var err error
-	v, ok := UserCache.Get(in.Uid)
-	if ok {
-		userInfo = v.(Dao.UserInfo)
-	} else {
-		userInfo, err = Dao.QueryUserInfo(in.Uid)
-		if err != nil {
-			rsp.Ret = -1
-			return rsp, nil
-		}
-		UserCache.Add(in.Uid, userInfo)
-	}
-
-	rsp.Uid = userInfo.Uid
-	rsp.Nick = userInfo.Nick
-	rsp.Pic = userInfo.Picture
-	rsp.Pwd = userInfo.Password
-
-	return rsp, nil
-
 }

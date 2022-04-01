@@ -1,28 +1,16 @@
 package main
 
 import (
-	"encoding/gob"
 	"entryTask/common/log"
-	"entryTask/common/zrpc"
-	"entryTask/protocal"
+	"entryTask/protocal/entry_task/pb"
 	"entryTask/tcpServer/Dao"
 	"entryTask/tcpServer/config"
 	"entryTask/tcpServer/logic"
-)
+	"net"
 
-// RegisterRpcStruct 注册RPC结构
-func RegisterRpcStruct() {
-	gob.Register(protocal.SetSessionInfoRequest{})
-	gob.Register(protocal.SetSessionInfoReply{})
-	gob.Register(protocal.GetUserInfoRequest{})
-	gob.Register(protocal.GetUserInfoReply{})
-	gob.Register(protocal.UpdateUserInfoRequest{})
-	gob.Register(protocal.UpdateUserInfoReplay{})
-	gob.Register(protocal.GetSessionInfoRequest{})
-	gob.Register(protocal.GetSessionInfoReply{})
-	gob.Register(protocal.RefreshSessionRequest{})
-	gob.Register(protocal.RefreshSessionReply{})
-}
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
+)
 
 func main() {
 	err := log.Init()
@@ -49,18 +37,20 @@ func main() {
 		return
 	}
 
-	RegisterRpcStruct()
-
-	srv := zrpc.NewServer(config.Config.ServerAddr)
-	srv.Register("SetSessionInfo", logic.SetSessionInfo)
-	srv.Register("GetUserInfo", logic.GetUserInfo)
-	srv.Register("UpdateUserInfo", logic.UpdateUserInfo)
-	srv.Register("GetSessionInfo", logic.GetSessionInfo)
-	srv.Register("RefreshSession", logic.RefreshSession)
-
 	log.Log.Infof("server is run...")
-
-	go srv.Run()
+	lis, err := net.Listen("tcp", config.Config.ServerAddr)
+	if err != nil {
+		log.Log.Errorf("listen err:%s", err)
+		return
+	}
+	s := grpc.NewServer()
+	pb.RegisterEntryTaskServer(s, &logic.Server{})
+	// Register reflection service on gRPC server.
+	reflection.Register(s)
+	if err := s.Serve(lis); err != nil {
+		log.Log.Errorf("failed to serve: %v", err)
+		return
+	}
 
 	select {}
 }
