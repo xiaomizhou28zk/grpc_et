@@ -46,10 +46,30 @@ message GetUserInfoResponse {
   optional string pwd = 5;
 }
 
+message MessageInfo {
+  optional uint64 id = 1;
+  optional string msg = 2;
+  optional string image = 3;
+  optional string owner = 4;
+  optional uint64 ctime = 5;
+  optional uint64 mtime = 6;
+  optional string uid = 7;
+}
+
+message GetMessageListRequest {
+  optional string uid = 1;
+}
+
+message GetMessageListResponse {
+  optional uint32 ret = 1;
+  repeated MessageInfo list = 2;
+}
+
 service EntryTask {
   rpc GetUserInfo (GetUserInfoRequest) returns (GetUserInfoResponse) {}
   rpc UpdateUserInfo (UpdateUserInfoRequest) returns (UpdateUserInfoResponse) {}
   rpc GetSessionInfo (GetSessionInfoRequest) returns (GetSessionInfoResponse) {}
   rpc RefreshSession (RefreshSessionRequest) returns (RefreshSessionResponse) {}
   rpc SetSessionInfo (SetSessionInfoRequest) returns (SetSessionInfoResponse) {}
+  rpc GetMessageList (GetMessageListRequest) returns (GetMessageListResponse) {}
 }
