@@ -16,6 +16,7 @@ func registerHandler() {
 	http.HandleFunc("/getUserInfo", handleLogic.GetUserInfo)
 	http.HandleFunc("/updateUserInfo", handleLogic.UpdateUserInfo)
 	http.HandleFunc("/uploadFile", handleLogic.UploadFile)
+	http.HandleFunc("/getMessageList", handleLogic.GetMessageList)
 
 	http.Handle("/html/", http.StripPrefix("/html/", http.FileServer(http.Dir("html"))))
 	http.Handle("/picture/", http.StripPrefix("/picture/", http.FileServer(http.Dir("picture"))))

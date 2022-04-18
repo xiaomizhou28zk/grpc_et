@@ -78,6 +78,7 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sessionID := createSessionID(uid)
+	http.SetCookie(w, &http.Cookie{Name: "uid", Value: uid, Path: "/", HttpOnly: false, MaxAge: 3600})
 	cookie := http.Cookie{Name: "sessionID", Value: sessionID, Path: "/", HttpOnly: false, MaxAge: 3600}
 	http.SetCookie(w, &cookie)
 

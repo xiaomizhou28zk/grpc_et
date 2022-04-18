@@ -1,0 +1,209 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .list_con{
+            width: 600px;
+            margin: 50px auto 0;
+        }
+        .inputtext{
+            width: 550px;
+            height: 30px;
+            border: 1px solid #ccc;
+            padding: 0px;
+            text-indent: 10px;
+        }
+        .inputbtn{
+            width: 40px;
+            height: 32px;
+            padding: 0px;
+            border: 1px solid #ccc;
+        }
+        .list{
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            margin-top: 20px;
+        }
+        .list li{
+            height: 40px;
+            line-height: 40px;
+            border-bottom: 1px solid #ccc;
+        }
+        .list li span{
+            float: left;
+        }
+        .list li a{
+            float: right;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+    </style>
+    <style type="text/css">
+        .content{
+            display:none;
+            width:250px;
+            height:70px;
+            border-radius:10px;
+            padding:20px;
+            position:relative;
+            top:15px;
+            left:80px;
+            background-color:#2F4056;
+        }
+    </style>
+    <script src="./jquery-1.12.4.min.js"></script>
+    <script>
+        var $contentInput = $('#text1');
+        var $addBtn = $('#btn1');
+        var $list = $('#list');
+
+        function clickButton1(e) {
+            //判断是否为空
+            if($contentInput.val()===''){
+                alert('请输入内容!')
+                return;
+            }
+
+
+            //e.preventDefault()
+            // 异步对象
+            var xhr = new XMLHttpRequest();
+
+            // 设置属性
+            xhr.open('post', 'http://101.42.251.239:8080/getMessageList');
+
+            // 如果想要使用post提交数据,必须添加此行
+            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+            xhr.send();
+
+            // 发送并接受返回值
+            xhr.onreadystatechange = function () {
+                // 这步为判断服务器是否正确响应
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        var obj = JSON.parse(xhr.responseText);
+                        msgRspLogic(obj);
+                    }else {
+                        alert("err!!!")
+                    }
+                }
+            };
+        }
+        function msgRspLogic(obj) {
+            if (obj.ret === 0) {
+                //alert(xhr.getAllResponseHeaders())
+                for (var i=0;i<obj.list.length;i++)
+                {
+                    var $sLi = $('<li><span>'+obj.list[i].uid+obj.list[i].msg+'</span><a href="#" class="up">↑</a><a href="#" class="down">↓</a><a href="#" class="del">删除</a>')
+                    $list.append($sLi);
+                }
+            }else {
+                alert(obj.ret);
+            }
+        }
+        $(function(){
+
+            $addBtn.click(function(){
+                //判断是否为空
+                if($contentInput.val()===''){
+                    alert('请输入内容!')
+                    return;
+                }
+                // 这是jquery的拼接
+                var $sLi = $('<li><span>'+$contentInput.val()+'</span><a href="#" class="up">↑</a><a href="#" class="down">↓</a><a href="#" class="del">删除</a>')
+                $list.append($sLi);
+
+                //清空输入框
+                $contentInput.val('');
+            })
+
+
+
+            //事件的委托,之所以会用事件的委托,是因为后面会有添加的li标签,也要对其有效果
+            $list.delegate('a','click',function(){
+                var sClass = $(this).prop('class');
+                if(sClass==="del"){
+                    // 点的是a标签,我们要删的是li标签
+                    $(this).parent().remove();
+                }else if(sClass==="up"){
+                    //获取当前的li标签
+                    var $currentLi = $(this).parent();
+                    //获取当前li标签的上一个标签
+                    var $upLi = $(this).parent().prev();
+
+                    // console.log($currentLi.length);
+
+                    if($upLi.length==0){
+                        alert('到头了');
+                        return;
+                    }
+                    //交换顺序
+                    $upLi.insertAfter($currentLi);
+                }
+                else if(sClass=="down"){
+                    //获取当前li标签
+                    var $currentLi = $(this).parent();
+                    //获取下面的li标签
+                    var $downLi = $(this).parent().next();
+
+                    if($downLi.length==0){
+                        alert('到底了')
+                        return;
+                    }
+                    //交换顺序
+                    $downLi.insertBefore($currentLi);
+                    // $currentLi.insertAfter($downLi);
+                }
+            })
+
+
+        })
+
+
+
+    </script>
+    <script src="./jquery-2.0.3.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(".contact").mouseover(function(){
+                $(".content").show("slow");
+                $(".contact").mouseout(function(){
+                    $(".content").hide("slow");
+                });
+            });
+        })
+    </script>
+</head>
+<body onload="clickButton1()">
+<div class="list_con">
+    <h2>添加、删除、排序</h2>
+    <input type="text" name="" id="text1" class="inputtext">
+    <input type="button" name="" value="增加" id="btn1" class="inputbtn">
+
+    <ul id="list" class="list">
+        <li><span>你今天好不好</span><a href="#" class="up">↑</a><a href="#" class="down">↓</a><a href="#" class="del">删除</a>
+        </li>
+        <li>
+            <span>学习,学习,学习</span><a href="#" class="up">↑</a><a href="#" class="down">↓</a><a href="#" class="del">删除</a>
+        </li>
+        <li class="third"><span>走到她身边去</span><a href="#" class="up">↑</a><a href="#" class="down">↓</a><a href="#" class="del">删除</a>
+        </li>
+
+    </ul>
+
+
+</div>
+
+<a href="#" style="color: #99ff00" class="contact">不再犹豫</a>
+<div class="content" style="color: white;">
+    添加成功<br /><br />
+</div>
+
+</body>

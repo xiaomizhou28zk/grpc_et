@@ -162,3 +162,22 @@ func refreshSessionRpc(sessionID string) {
 	log.Log.Debugf("refresh session ok")
 	_ = common.MyPool.Put(*conn)
 }
+
+func getMessageListRpc(uid string) (msgList []*pb.MessageInfo, err error) {
+	cli, conn, err := getClient()
+	if err != nil {
+		log.Log.Errorf("get conn err:%s", err)
+		return
+	}
+	req := &pb.GetMessageListRequest{
+		Uid: proto.String(uid),
+	}
+
+	resp, err := cli.GetMessageList(context.Background(), req)
+	if err != nil {
+		log.Log.Errorf("GetMessageList err:%s", err)
+		return nil, err
+	}
+	_ = common.MyPool.Put(*conn)
+	return resp.GetList(), nil
+}
