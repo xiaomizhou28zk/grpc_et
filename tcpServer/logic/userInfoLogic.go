@@ -14,18 +14,10 @@ func (s *Server) GetUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*
 
 	rsp := &pb.GetUserInfoResponse{}
 
-	userInfo := Dao.UserInfo{}
-	var err error
-	v, ok := UserCache.Get(req.GetUid())
-	if ok {
-		userInfo = v.(Dao.UserInfo)
-	} else {
-		userInfo, err = Dao.QueryUserInfo(req.GetUid())
-		if err != nil {
-			rsp.Ret = proto.Int32(-1)
-			return rsp, nil
-		}
-		UserCache.Add(req.GetUid(), userInfo)
+	userInfo, err := getUserInfoByUid(req.GetUid())
+	if err != nil {
+		rsp.Ret = proto.Int32(-1)
+		return rsp, nil
 	}
 
 	rsp.Uid = proto.String(userInfo.Uid)
@@ -35,6 +27,22 @@ func (s *Server) GetUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*
 
 	return rsp, nil
 
+}
+
+func getUserInfoByUid(uid string) (*Dao.UserInfo, error) {
+	userInfo := Dao.UserInfo{}
+	var err error
+	v, ok := UserCache.Get(uid)
+	if ok {
+		userInfo = v.(Dao.UserInfo)
+	} else {
+		userInfo, err = Dao.QueryUserInfo(uid)
+		if err != nil {
+			return nil, err
+		}
+		UserCache.Add(uid, userInfo)
+	}
+	return &userInfo, nil
 }
 
 // UpdateUserInfo 更新用户信息
