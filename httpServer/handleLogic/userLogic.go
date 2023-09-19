@@ -43,22 +43,35 @@ func LoginPage(w http.ResponseWriter, r *http.Request) {
 	_ = t.Execute(w, nil)
 }
 
+type LoginParams struct {
+	UID string `json:"uid"`
+	PWD string `json:"pwd"`
+}
+
 // UserLogin 用户登入
 func UserLogin(w http.ResponseWriter, r *http.Request) {
 	rsp := userLoginRsp{
 		Ret: common.SucCode,
 	}
 
-	_ = r.ParseForm()
-	if !checkParams("uid", r) || !checkParams("pwd", r) {
+	// 解析 JSON 参数
+	var params LoginParams
+	if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
 		rsp.Ret = common.MissingParams
 		msg, _ := json.Marshal(rsp)
 		_, _ = w.Write(msg)
 		return
 	}
 
-	pwd := r.Form["pwd"][0]
-	uid := r.Form["uid"][0]
+	//_ = r.ParseForm()
+	pwd := params.PWD
+	uid := params.UID
+	if pwd == "" || uid == "" {
+		rsp.Ret = common.MissingParams
+		msg, _ := json.Marshal(rsp)
+		_, _ = w.Write(msg)
+		return
+	}
 
 	userInfo, err := getUserInfoRpc(uid)
 	if err != nil {
