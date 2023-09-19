@@ -26,6 +26,7 @@ type getUserInfoRsp struct {
 	Nick string `json:"nick"` //昵称
 	Pic  string `json:"pic"`  //头像
 	Url  string `json:"url"`  //跳转链接
+	List []string `json:"list"` //消息列表
 }
 
 // updateUserInfoRsp 更新用户信息返回包
@@ -138,6 +139,7 @@ func GetUserInfo(w http.ResponseWriter, r *http.Request) {
 	rsp.UID = u.UID
 	rsp.Nick = u.Nick
 	rsp.Pic = u.Picture
+	rsp.List = []string{"11111111111","22222222222","3333333333","4444444444","55555555555555","66666666666666"}
 
 	msg, _ := json.Marshal(rsp)
 	_, _ = w.Write(msg)
