@@ -5,7 +5,7 @@
   "pictureUrl": "http://101.42.251.239:8080/picture/",
   "indexPage": "/home/scottk.zhang/work/et/grpc_et//httpServer/html/index.html",
   "loginPage":"http://101.42.251.239:8080/html/index.html",
-  "userInfoPage": "http://101.42.251.239:8080/html/userInfo.html",
+  "userInfoPage": "http://101.42.251.239:8080/html/2.html",
   "connCap": 4,
   "connTimeOut": 600
 }
