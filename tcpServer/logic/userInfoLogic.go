@@ -7,6 +7,7 @@ import (
 
 	"golang.org/x/net/context"
 	"google.golang.org/protobuf/proto"
+	"fmt"
 )
 
 // GetUserInfo 获取用户信息
@@ -48,13 +49,16 @@ func getUserInfoByUid(uid string) (*Dao.UserInfo, error) {
 // UpdateUserInfo 更新用户信息
 func (s *Server) UpdateUserInfo(ctx context.Context, req *pb.UpdateUserInfoRequest) (*pb.UpdateUserInfoResponse, error) {
 	log.Log.Debugf("Received uid: %v, nick:%s, pic:%s", req.GetUid(), req.GetNick(), req.GetPic())
+	fmt.Printf("Received uid: %v, nick:%s, pic:%s", req.GetUid(), req.GetNick(), req.GetPic())
 	rsp := &pb.UpdateUserInfoResponse{}
 	if req.GetNick() == "" && req.GetPic() == "" {
+		fmt.Println("111111")
 		rsp.Ret = proto.Int32(-1)
 		return rsp, nil
 	}
 	err := Dao.UpdateUserInfo(req.GetUid(), req.GetNick(), req.GetPic())
 	if err != nil {
+		fmt.Println("222222", err)
 		rsp.Ret = proto.Int32(-1)
 		return rsp, nil
 	}

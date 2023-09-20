@@ -24,6 +24,7 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 	rsp := &uploadFileRet{Ret: 0}
 	_, status := checkSession(r)
 	if !status {
+		fmt.Printf("UploadFile 1 err")
 		log.Log.Errorf("check session err")
 		rsp.Ret = common.InvalidSession
 		rsp.Url = config.Config.LoginPage
@@ -37,6 +38,7 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 
 	picture, handler, err := r.FormFile("picture")
 	if err != nil {
+		fmt.Printf("UploadFile 2 err:%s", err)
 		return
 	}
 

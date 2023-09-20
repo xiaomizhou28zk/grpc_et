@@ -3,10 +3,10 @@ package Dao
 import (
 	"database/sql"
 	"entryTask/common/log"
-	"entryTask/httpServer/common"
+	//"entryTask/httpServer/common"
 	"entryTask/tcpServer/config"
 	"fmt"
-	"strconv"
+	//"strconv"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -65,18 +65,16 @@ func UpdateUserInfo(uid, nick, picture string) error {
 		log.Log.Errorf("update userinfo err:%s", err)
 		return err
 	}
-	n, err := ret.RowsAffected()
+	_, err = ret.RowsAffected()
 	if err != nil {
 		log.Log.Errorf("get RowsAffected err:%s", err)
 		return err
-	}
-	if n != 1 {
-		return fmt.Errorf("RowsAffected not one")
 	}
 	return nil
 }
 
 // getTableName 获取表名
 func getTableName(uid string) string {
-	return "user_info_" + strconv.Itoa(int(common.BKDRHash(uid)%100))
+	return "user_info_10"
+	//return "user_info_" + strconv.Itoa(int(common.BKDRHash(uid)%100))
 }
