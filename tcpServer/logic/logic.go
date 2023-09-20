@@ -1,3 +1,9 @@
 package logic
 
-type Server struct {}
+import (
+	"entryTask/protocal/entry_task/pb"
+)
+
+var _ pb.EntryTaskServer = &Server{}
+
+type Server struct{}

@@ -3,6 +3,7 @@ package Dao
 import (
 	"entryTask/common/log"
 	"fmt"
+	"time"
 )
 
 type MessageInfo struct {
@@ -40,4 +41,15 @@ func GetMessageList(uid string) ([]*MessageInfo, error) {
 	}
 
 	return msgList, nil
+}
+
+func AddMessage(uid, msg, userName string) error {
+	t := time.Now().Unix()
+	sql := fmt.Sprintf("insert into message_tab(`message`,`owner`,`uid`,`ctime`,`mtime`) values(%s,%s,%s,%d,%d)",
+		msg, uid, userName, t, t)
+	_, err := db.Exec(sql)
+	if err != nil {
+		return err
+	}
+	return nil
 }
