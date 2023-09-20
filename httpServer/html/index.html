@@ -1,145 +1,132 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Login</title>
-    <!--<link rel="stylesheet" type="text/css" href="login.css"/>-->
+  <title>Login Page</title>
+  <link rel="stylesheet" type="text/css" href="https://cdn.bootcss.com/toastr.js/latest/css/toastr.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f2f2f2;
+    }
+    
+    .container {
+      max-width: 400px;
+      margin: 100px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .toast-center-center {
+           top: 50%;
+           left: 50%;
+           margin-top: -30px;
+           margin-left: -150px;
+    }
 
-    <style type="text/css">
-        html{
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            font-style: sans-serif;
-        }
-        body{
-            width: 100%;
-            height: 100%;
-            font-family: 'Open Sans',sans-serif;
-            margin: 0;
-            background-color: #4A374A;
-        }
-        #login{
-            position: absolute;
-            top: 50%;
-            left:50%;
-            margin: -150px 0 0 -150px;
-            width: 300px;
-            height: 300px;
-        }
-        #login h1{
-            color: #fff;
-            text-shadow:0 0 10px;
-            letter-spacing: 1px;
-            text-align: center;
-        }
-        h1{
-            font-size: 2em;
-            margin: 0.67em 0;
-        }
-        input{
-            width: 278px;
-            height: 18px;
-            margin-bottom: 10px;
-            outline: none;
-            padding: 10px;
-            font-size: 13px;
-            color: #fff;
-            text-shadow:1px 1px 1px;
-            border-top: 1px solid #312E3D;
-            border-left: 1px solid #312E3D;
-            border-right: 1px solid #312E3D;
-            border-bottom: 1px solid #56536A;
-            border-radius: 4px;
-            background-color: #2D2D3F;
-        }
-        .but{
-            width: 300px;
-            min-height: 20px;
-            display: block;
-            background-color: #4a77d4;
-            border: 1px solid #3762bc;
-            color: #fff;
-            padding: 9px 14px;
-            font-size: 15px;
-            line-height: normal;
-            border-radius: 5px;
-            margin: 0;
-        }
-    </style>
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    
+    input[type="submit"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 20px;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    input[type="submit"]:hover {
+      background-color: #45a049;
+    }
+  </style>
 </head>
-
-
 <body>
-<div id="login">
-    <h1>Login</h1>
-    <form method="post">
-        <input type="text" required="required" placeholder="用户名" name="u" id="userID"></input>
-        <input type="password" required="required" placeholder="密码" name="p" id="pwdID"></input>
-        <button class="but" type="submit" onclick="clickButton()">登录</button>
+  <div class="container">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <label for="username">账户:</label>
+      <input type="text" id="username" name="uid" required>
+      
+      <label for="password">密码:</label>
+      <input type="password" id="password" name="pwd" required>
+      
+      <input type="submit" value="Login">
     </form>
-</div>
+  </div>
 
-<script type="text/javascript">
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/toastr.js/latest/js/toastr.min.js"></script>
 
-    function clickButton(e) {
-        var name = document.getElementById("userID").value;
-        var pwd = document.getElementById("pwdID").value;
+  <script>
+    toastr.options = {
+      closeButton: true,
+      progressBar: true,
+      positionClass: "toast-center-center", // 居中显示
+      timeOut: 3000 // 3秒后自动关闭
+    };
 
-        if ( name == "" || name == '' || name == undefined || name == null) {
-            alert("用户名不能为空值!!!")
-            return
-        }
+    document.getElementById("loginForm").addEventListener("submit", function(event) {
+      event.preventDefault();  // 阻止表单默认提交行为
 
-        if ( pwd == "" || pwd == '' || pwd == undefined || pwd == null) {
-            alert("密码不能为空值!!!")
-            return
-        }
+      // 获取用户名和密码输入框的值
+      var username = document.getElementById("username").value;
+      var password = document.getElementById("password").value;
 
-        //e.preventDefault()
-        // 异步对象
-        var xhr = new XMLHttpRequest();
+      // 构建请求参数对象
+      var params = {
+        uid: username,
+        pwd: password
+      };
 
-        // 设置属性
-        xhr.open('post', 'http://101.42.251.239:8080/userLogin');
-
-        // 如果想要使用post提交数据,必须添加此行
-        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-
-        var fomateData = "uid="+name+"&"+"pwd="+pwd;
-        // 将数据通过send方法传递
-        xhr.send(fomateData);
-
-        // 发送并接受返回值
-        xhr.onreadystatechange = function () {
-            // 这步为判断服务器是否正确响应
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    var obj = JSON.parse(xhr.responseText);
-                    rspLogic(obj);
-                }else {
-                    alert("err!!!")
-                }
+      // 发送 POST 请求
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", "http://101.42.251.239:8080/userLogin", true);
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+          if (xhr.status === 200) {
+            // 请求成功处理
+            var response = JSON.parse(xhr.responseText);
+            // 处理返回的响应数据
+            console.log(response);
+            if (response.ret === 2) {
+              toastr.error("账号或密码错误!");
             }
-        };
-    }
-
-    function rspLogic(obj) {
-        if (obj.ret === 0) {
-            //alert(xhr.getAllResponseHeaders())
-            window.location.href = obj.url;
-        }else {
-            if (obj.ret === 1) {
-                alert("账户密码不能为空！");
-            }else if (obj.ret === 2) {
-                alert("账户或密码错误！");
-            }else {
-                alert(obj.ret);
+            if (response.url) {
+              // 跳转到返回值中的url字段所对应的页面
+              window.location.href = response.url;
             }
+          } else {
+            // 请求失败处理
+            console.log("Error:", xhr.status);
+          }
         }
-    }
-</script>
-
+      };
+      xhr.send(JSON.stringify(params));
+    });
+  </script>
 </body>
 </html>
-

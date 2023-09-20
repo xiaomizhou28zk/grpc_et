@@ -1,119 +1,336 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
-
+    <title>User Blog</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.bootcss.com/toastr.js/latest/css/toastr.min.css">
     <style>
-        p.margin {margin: 2cm}
-        .black_overlay{
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .user-info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .user-info img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+
+        .user-info h2 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .user-info p {
+            font-size: 16px;
+            color: #666666;
+        }
+
+        .message-list {
+            margin-top: 30px;
+        }
+
+        .message-item {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #cccccc;
+            padding-bottom: 10px;
+        }
+
+        .message-item:last-child {
+            border-bottom: none;
+        }
+
+        .message-item h3 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .message-item p {
+            font-size: 16px;
+            color: #666666;
+        }
+
+        .modal {
             display: none;
-            position: absolute;
-            top: 0%;
-            left: 0%;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
             width: 100%;
             height: 100%;
-            background-color: black;
-            z-index:1001;
-            -moz-opacity: 0.8;
-            opacity:.80;
-            filter: alpha(opacity=88);
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
         }
-        .white_content {
-            display: none;
-            position: absolute;
-            top: 25%;
-            left: 25%;
-            width: 55%;
-            height: 55%;
+
+        .modal-content {
+            background-color: #ffffff;
             padding: 20px;
-            border: 10px solid orange;
-            background-color: white;
-            z-index:1002;
-            overflow: auto;
+            border-radius: 5px;
+            text-align: center;
         }
-    </style>
-</head>
 
-<body onload="load1()" style="background-color: #88b3ff">
-<p align="center">登陆成功</p>
+        .modal img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
 
+        .modal input[type="file"] {
+            margin-bottom: 10px;
+        }
 
-<p>账户</p>
-<input id="UID" type="text" style="width: 30%" readonly>
+        .modal button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
 
-<p>昵称</p>
-<input id="nickID" type="text" style="width: 30%" readonly>
+        .modal-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        }
+        .toast-center-center {
+           top: 50%;
+           left: 50%;
+           margin-top: -30px;
+           margin-left: -150px;
+        }
 
-<p>头像</p>
-
-<div><img id="imageID" height="100" width="100" border="2" src=""  alt="空" /></div>
-
-
-<div><a href = "JavaScript:void(0)" onclick = "openDialog()">修改资料</a></div>
-
-
-<div id="light" class="white_content">
-    <div><a href = "javascript:void(0)" onclick = "closeDialog()">关闭</a></div>
-    <p style="white-space: nowrap">昵称</p>
-    <input id="subNickID" type="text" style="width: 30%">
-    <p>头像</p>
-    <input id="subPic" type="text" style="width: 30%" readonly>
-    <div><input type="file" id="picture" value=""></div>
-    <p class="margin"> </p>
-    <p class="margin"> </p>
-    <div><button onclick="updateUserInfo()">提交</button></div>
-
-</div>
-<div id="fade" class="black_overlay"> </div>
-
-</body>
-
-<script>
-    function load1() {
-
-        var xhr = new XMLHttpRequest();
-
-        // 设置属性
-        xhr.open('post', 'http://101.42.251.239:8080/getUserInfo');
-
-        // 如果想要使用post提交数据,必须添加此行
-        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-
-        // 将数据通过send方法传递
-        xhr.send();
-
-        // 发送并接受返回值
-        xhr.onreadystatechange = function () {
-            // 这步为判断服务器是否正确响应
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    var obj = JSON.parse(xhr.responseText);
-
-                    if (obj.ret === 4) {
-                        window.location.href = obj.url;
-                        return
-                    }
-
-                    document.getElementById("imageID").src = obj.pic;
-                    document.getElementById("UID").value = obj.uid;
-                    document.getElementById("nickID").value = obj.nick;
-                }else {
-                    alert("err!!!")
-                }
-            }
-        };
+    .close-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
     }
 
-    function updateUserInfo() {
+.profile-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px; /* 调整头像和输入框之间的间距 */
+}
+
+.profile-picture {
+  width: 100px; /* 调整头像容器的宽度 */
+  height: 100px; /* 调整头像容器的高度 */
+  border-radius: 50%; /* 将头像容器变为圆形 */
+  overflow: hidden; /* 隐藏头像溢出的部分 */
+}
+
+#edit-profile-pic {
+  width: 100%; /* 让头像填充整个容器 */
+  height: 100%; /* 让头像填充整个容器 */
+  object-fit: cover; /* 调整头像的缩放和裁剪方式 */
+}
+
+.profile-input {
+  margin-top: 10px; /* 调整输入框和头像之间的间距 */
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+}
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="user-info">
+        <img id="user-pic" src="" alt="User Picture">
+        <h2 id="user-nick"></h2>
+        <p id="user-id"></p>
+    </div>
+    <button id="edit-profile-btn">修改资料</button>
+
+    <div class="message-list" id="message-list"></div>
+
+</div>
+
+<!-- <div class="modal" id="edit-profile-modal">
+    <div class="modal-content">
+      <h2>修改资料</h2>
+      <div class="profile-section">
+        <div class="profile-picture">
+          <img id="edit-profile-pic" src="" alt="User Picture">
+        </div>
+        <div class="profile-input">
+          <input type="text" id="edit-profile-nick" placeholder="在此输入...">
+        </div>
+      </div>
+      <div class="button-container">
+        <button id="update-btn">更新资料</button>
+      </div>
+    </div>
+</div> -->
+
+<div class="modal" id="edit-profile-modal">
+    <div class="modal-content">
+      <h2>修改资料</h2>
+      <div class="profile-section">
+        <div class="profile-picture">
+          <img id="edit-profile-pic" src="" alt="User Picture">
+        </div>
+        <div class="profile-input">
+          <input type="text" id="edit-profile-nick" placeholder="在此输入...">
+        </div>
+      </div>
+      <div class="button-container">
+        <button id="update-btn">更新资料</button>
+      </div>
+      <span class="close-button" onclick="closeModal()">x</span>
+    </div>
+</div>
+
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/toastr.js/latest/js/toastr.min.js"></script>
+
+<script>
+     function refreshPage() {
+      location.reload();
+     }
+    toastr.options = {
+      closeButton: true,
+      progressBar: true,
+      positionClass: "toast-center-center", // 居中显示
+      timeOut: 3000 // 3秒后自动关闭
+    };
+    // Create a new XMLHttpRequest object
+    var xhr = new XMLHttpRequest();
+
+    // Define the request URL and method
+    var url = 'http://101.42.251.239:8080/getUserInfo';
+    var method = 'POST';
+
+    // Set up the request
+    xhr.open(method, url, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+
+    // Set up the callback function to handle the response
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            var response = JSON.parse(xhr.responseText);
+
+            // Update the user info on the page
+            document.getElementById('user-pic').src = response.pic;
+            document.getElementById('user-nick').textContent = response.nick;
+            document.getElementById('user-id').textContent = 'UserID: ' + response.uid;
+
+            // Render the message list
+            var messageList = response.list;
+            var messageListElement = document.getElementById('message-list');
+
+            for (var i = 0; i < messageList.length; i++) {
+                var messageItem = document.createElement('div');
+                messageItem.classList.add('message-item');
+
+                var titleElement = document.createElement('h3');
+                titleElement.textContent = '新闻 ' + (i + 1);
+
+                var contentElement = document.createElement('p');
+                contentElement.textContent = messageList[i];
+
+                messageItem.appendChild(titleElement);
+                messageItem.appendChild(contentElement);
+
+                messageListElement.appendChild(messageItem);
+            }
+        }
+    };
+
+    // Create the request body
+    var requestBody = JSON.stringify({});
+
+    // Send the request
+    xhr.send(requestBody);
+
+    // Edit profile button click event
+    var editProfileBtn = document.getElementById('edit-profile-btn');
+    var editProfileModal = document.getElementById('edit-profile-modal');
+    var editProfilePic = document.getElementById('edit-profile-pic');
+    var editProfileNick = document.getElementById('edit-profile-nick');
+    var updateBtn = document.getElementById('update-btn');
+    var clickNUm = 0
+
+    editProfileBtn.addEventListener('click', function () {
+        editProfileModal.style.display = 'flex';
+        editProfilePic.src = document.getElementById('user-pic').src;
+        editProfileNick.value = document.getElementById('user-nick').textContent;
+    });
+
+    // Upload button click event
+    editProfilePic.addEventListener('click', function () {
+
+        // 创建一个隐藏的文件选择输入
+        var fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.style.display = 'none';
+
+        // 添加文件选择事件监听器
+        fileInput.addEventListener('change', function(event) {
+            var file = event.target.files[0];
+            // 在这里可以处理选择的文件，例如上传到服务器等
+            console.log('已选择文件:', file);
+
+            if (file) {
+            var formData = new FormData();
+            formData.append('picture', file);
+
+            var uploadXHR = new XMLHttpRequest();
+            uploadXHR.open('POST', 'http://101.42.251.239:8080/uploadFile', true);
+
+            uploadXHR.onload = function () {
+                if (uploadXHR.status === 200) {
+                    var response = JSON.parse(uploadXHR.responseText);
+                    if (response.ret === 0) {
+                        editProfilePic.src = response.url;
+                        document.getElementById('user-pic').src = response.url;
+                    } else {
+                        alert('上传失败，请重试！');
+                    }
+                }
+            };
+
+            uploadXHR.send(formData);
+        }
+        });
+
+        // 触发文件选择对话框
+        fileInput.click();
+
+        
+    });
+
+    updateBtn.addEventListener('click', function () {
         var xhr = new XMLHttpRequest();
         // 设置属性
         xhr.open('post', 'http://101.42.251.239:8080/updateUserInfo');
         // 如果想要使用post提交数据,必须添加此行
         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         // 将数据通过send方法传递
-        var nick = document.getElementById("subNickID").value;
-        var pic = document.getElementById("subPic").value;
+        var nick = document.getElementById("edit-profile-nick").value;
+        var pic = editProfilePic.src;
         var formData = "nick="+nick+"&pic="+pic;
         xhr.send(formData);
         // 发送并接受返回值
@@ -126,79 +343,31 @@
                         window.location.href = obj.url;
                         return
                     }else if (obj.ret === 0) {
-                        alert("修改成功!")
-                        document.getElementById("nickID").value = nick;
-                        document.getElementById("imageID").src = pic;
-                        closeDialog()
+                        document.getElementById("user-nick").value = nick;
+                        document.getElementById("user-pic").src = pic;
+                        //refreshPage()
+                        toastr.success("修改成功!");
                     }else {
-                        alert(obj.ret)
+                        toastr.error(obj.ret);
                     }
                 }else {
-                    alert("err!!!")
+                    toastr.error("err!!!");
                 }
             }
+            closeEditProfileModal()
         };
+    });
+
+    function closeEditProfileModal() {
+        var editProfileModal = document.getElementById('edit-profile-modal');
+        editProfileModal.style.display = 'none';
     }
 
-
-
-    function openDialog(){
-        document.getElementById('light').style.display='block';
-        document.getElementById('fade').style.display='block'
-        document.getElementById('subPic').value="";
-        document.getElementById('subNickID').value="";
+    function closeModal() {
+      var editProfileModal = document.getElementById('edit-profile-modal');
+      editProfileModal.style.display = 'none';
     }
-    function closeDialog(){
-        document.getElementById('light').style.display='none';
-        document.getElementById('fade').style.display='none'
-    }
-
-    fileInput = document.getElementById("picture")
-    fileInput.addEventListener('change', function () {
-        if (!fileInput.value) {
-            alert("没有选择照片！")
-            return
-        }
-
-        var file = fileInput.files[0];
-        if (file.size >= 1 * 1024*1024) {
-            alert("文件过大")
-            return false;
-        }
-
-        uploadFile(file)
-    })
-
-
-    // 上传头像
-    function uploadFile(file) {
-        var xhr = new XMLHttpRequest();
-        // 设置属性
-        xhr.open('post', 'http://101.42.251.239:8080/uploadFile');
-        // setRequestHeader post文件的时候不要设置
-        var formatData = new FormData();
-        formatData.append("picture", document.querySelector("#picture").files[0]);
-
-        xhr.send(formatData);
-        // 发送并接受返回值
-        xhr.onreadystatechange = function () {
-            // 这步为判断服务器是否正确响应
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    var obj = JSON.parse(xhr.responseText);
-                    if(obj.ret === 0) {
-                        document.getElementById("subPic").value = obj.url
-                    }else {
-                        alert(obj.ret)
-                    }
-                }else {
-                    alert("err!!!")
-                }
-            }
-        };
-    }
-
 
 </script>
-
+</body>
 </html>
