@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package entry_task;
 option go_package ="entry_task/pb";
-
+//protoc --go_out=. --go-grpc_out=. --go-grpc_opt=require_unimplemented_servers=false et_tcp.proto
 message UpdateUserInfoRequest {
   optional string uid = 1;
   optional string nick = 2;
@@ -65,6 +65,15 @@ message GetMessageListResponse {
   repeated MessageInfo list = 2;
 }
 
+message PublishMessageRequest {
+  optional string uid = 1;
+  optional string userName = 2;
+  optional string message = 3;
+}
+message PublishMessageResponse {
+  optional uint32 ret = 1;
+}
+
 service EntryTask {
   rpc GetUserInfo (GetUserInfoRequest) returns (GetUserInfoResponse) {}
   rpc UpdateUserInfo (UpdateUserInfoRequest) returns (UpdateUserInfoResponse) {}
@@ -72,4 +81,5 @@ service EntryTask {
   rpc RefreshSession (RefreshSessionRequest) returns (RefreshSessionResponse) {}
   rpc SetSessionInfo (SetSessionInfoRequest) returns (SetSessionInfoResponse) {}
   rpc GetMessageList (GetMessageListRequest) returns (GetMessageListResponse) {}
+  rpc PublishMessage (PublishMessageRequest) returns  (PublishMessageResponse) {}
 }
