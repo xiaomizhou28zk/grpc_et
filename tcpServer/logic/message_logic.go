@@ -5,13 +5,14 @@ import (
 	"entryTask/common/log"
 	"entryTask/protocal/entry_task/pb"
 	"entryTask/tcpServer/Dao"
-
+	
 	"google.golang.org/protobuf/proto"
 )
 
 func (s *Server) GetMessageList(ctx context.Context, req *pb.GetMessageListRequest) (*pb.GetMessageListResponse, error) {
 
 	rsp := &pb.GetMessageListResponse{}
+	
 
 	msgList, err := Dao.GetMessageList(req.GetUid())
 	if err != nil {

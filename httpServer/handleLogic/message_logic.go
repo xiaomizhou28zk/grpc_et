@@ -26,7 +26,7 @@ type getMsgListRsp struct {
 func GetMessageList(w http.ResponseWriter, r *http.Request) {
 	rsp := getMsgListRsp{Ret: common.SucCode}
 
-	_, status := checkSession(r)
+	sessionInfo, status := checkSession(r)
 	if !status {
 		log.Log.Errorf("get session err")
 		rsp.Ret = common.InvalidSession
@@ -35,7 +35,7 @@ func GetMessageList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	msgList, err := getMessageListRpc("")
+	msgList, err := getMessageListRpc(sessionInfo.UID)
 	if err != nil {
 		log.Log.Errorf("getMessageListRpc err")
 		rsp.Ret = common.ServerErrCode

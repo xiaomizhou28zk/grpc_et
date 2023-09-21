@@ -20,10 +20,11 @@ func GetMessageList(uid string) ([]*MessageInfo, error) {
 
 	sqlStr := "select id,message,image,owner,ctime,mtime,uid from message_tab"
 	if len(uid) != 0 {
-		sqlStr += fmt.Sprintf("where uid='%s'", uid)
+		sqlStr += fmt.Sprintf(" where uid='%s'", uid)
 	}
 
 	msgList := make([]*MessageInfo, 0)
+	fmt.Println("sql:", sqlStr)
 
 	row, err := db.Query(sqlStr)
 	if err != nil {
