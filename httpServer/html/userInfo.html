@@ -153,19 +153,52 @@
   display: flex;
   justify-content: center;
 }
-    </style>
+
+.message-input {
+    display: flex;
+    margin-top: 20px;
+}
+
+.message-input input[type="text"] {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.message-input button {
+    padding: 10px 20px;
+    margin-left: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.message-input button:hover {
+    background-color: #45a049;
+}
+
+</style>
 </head>
 <body>
-<div class="container">
-    <div class="user-info">
-        <img id="user-pic" src="" alt="User Picture">
-        <h2 id="user-nick"></h2>
-        <p id="user-id"></p>
+    <div class="container">
+        <div class="user-info">
+            <img id="user-pic" src="" alt="User Picture">
+            <h2 id="user-nick"></h2>
+            <p id="user-id"></p>
+        </div>
+        <button id="edit-profile-btn">修改资料</button>
+    
+        <div class="message-list" id="message-list"></div>
+    
+        <div class="message-input">
+            <input type="text" id="message-text" placeholder="输入...">
+            <button id="send-btn">发布</button>
     </div>
-    <button id="edit-profile-btn">修改资料</button>
-
-    <div class="message-list" id="message-list"></div>
-
 </div>
 
 <div class="modal" id="edit-profile-modal">
@@ -267,6 +300,7 @@
     var editProfilePic = document.getElementById('edit-profile-pic');
     var editProfileNick = document.getElementById('edit-profile-nick');
     var updateBtn = document.getElementById('update-btn');
+    var sendBtn = document.getElementById('send-btn');
     var clickNUm = 0
 
     editProfileBtn.addEventListener('click', function () {
@@ -353,6 +387,43 @@
             closeEditProfileModal()
         };
     });
+
+    // sendBtn.addEventListener('click', function () {
+    //     var xhr = new XMLHttpRequest();
+    //     // 设置属性
+    //     xhr.open('post', 'http://101.42.251.239:8080/updateUserInfo');
+    //     // 如果想要使用post提交数据,必须添加此行
+    //     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    //     // 将数据通过send方法传递
+    //     var nick = document.getElementById("edit-profile-nick").value;
+    //     var pic = editProfilePic.src;
+    //     var formData = "nick="+nick+"&pic="+pic;
+    //     xhr.send(formData);
+    //     // 发送并接受返回值
+    //     xhr.onreadystatechange = function () {
+    //         // 这步为判断服务器是否正确响应
+    //         if (xhr.readyState === 4) {
+    //             if (xhr.status === 200) {
+    //                 var obj = JSON.parse(xhr.responseText);
+    //                 if (obj.ret === 4) {
+    //                     window.location.href = obj.url;
+    //                     return
+    //                 }else if (obj.ret === 0) {
+    //                     document.getElementById("user-nick").value = nick;
+    //                     document.getElementById("user-pic").src = pic;
+    //                     //refreshPage()
+    //                     toastr.success("修改成功!");
+    //                 }else {
+    //                     toastr.error(obj.ret);
+    //                 }
+    //             }else {
+    //                 toastr.error("err!!!");
+    //             }
+    //         }
+    //         closeEditProfileModal()
+    //     };
+    // });
+
 
     function closeEditProfileModal() {
         var editProfileModal = document.getElementById('edit-profile-modal');
