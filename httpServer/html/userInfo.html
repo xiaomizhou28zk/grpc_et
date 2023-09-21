@@ -5,16 +5,80 @@
     <title>User Blog</title>
     <link rel="stylesheet" type="text/css" href="https://cdn.bootcss.com/toastr.js/latest/css/toastr.min.css">
     <style>
+        #edit-profile-btn {
+            background-color: #ff5f5f;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 3px 8px;
+            font-size: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+            position: relative;
+            left:0px;
+        }
+    
+        #edit-profile-btn:hover {
+            background-color: #ff3333;
+        }
+    </style>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: #333;
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .navbar-brand {
+            color: #fff;
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .navbar-menu {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        .navbar-menu li {
+            margin-left: 20px;
+        }
+
+        .navbar-menu li a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .navbar-menu li a:hover {
+            color: #ff0;
+        }
+    </style>
+    <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-            padding: 20px;
+            background-color: #7b7979fa;
+            padding: 0px;
         }
 
         .container {
             max-width: 800px;
             margin: 0 auto;
-            background-color: #ffffff;
+            background-color: #b6b3b3;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             padding: 20px;
         }
@@ -205,6 +269,15 @@
     </style>
 </head>
 <body>
+    <div class="navbar">
+        <a href="#" class="navbar-brand">Logo</a>
+        <ul class="navbar-menu">
+            <li><a href="./userInfo.html">个人主页</a></li>
+            <li><a href="#">资料修改</a></li>
+            <li><a href="#">Services</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+    </div>
     <div class="container">
         <div class="user-info">
             <img id="user-pic" src="" alt="User Picture">
@@ -217,10 +290,6 @@
 
         <div class="pagination" id="pagination"></div>
 
-        <!-- <div class="pagination-bar">
-            <button id="prev-page-btn">上一页</button>
-            <button id="next-page-btn">下一页</button>
-        </div> -->
     
         <div class="message-input">
             <input type="text" id="message-text" placeholder="输入...">
