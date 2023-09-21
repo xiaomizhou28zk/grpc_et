@@ -2,7 +2,5 @@
 /log/
 http_server
 tcp_server
-httpServer
-tcpServer
 .vscode/
 .idea

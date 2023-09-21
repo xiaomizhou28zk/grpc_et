@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>个人资料修改</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.bootcss.com/toastr.js/latest/css/toastr.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        .avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: #ccc;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .form-group button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+    <style>
+        .profile-picture {
+            width: 200px; /* 调整头像容器的宽度 */
+            height: 200px; /* 调整头像容器的高度 */
+            border-radius: 50%; /* 将头像容器变为圆形 */
+            overflow: hidden; /* 隐藏头像溢出的部分 */
+        }
+        #edit-profile-pic {
+          width: 100%; /* 让头像填充整个容器 */
+          height: 100%; /* 让头像填充整个容器 */
+          object-fit: cover; /* 调整头像的缩放和裁剪方式 */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+<!--    <div class="avatar">   </div>-->
+    <div class="profile-picture">
+        <img id="edit-profile-pic" src="" alt="User Picture">
+    </div>
+    <div class="form-group">
+        <label for="uid">UID：</label>
+        <input type="text" id="uid" name="uid" readonly>
+    </div>
+    <div class="form-group">
+        <label for="username">用户名：</label>
+        <input type="text" id="username" name="username">
+    </div>
+    <div class="form-group">
+        <button type="submit">保存</button>
+    </div>
+</div>
+
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/toastr.js/latest/js/toastr.min.js"></script>
+
+<script>
+    toastr.options = {
+        closeButton: true,
+        progressBar: true,
+        positionClass: "toast-center-center", // 居中显示
+        timeOut: 3000 // 3秒后自动关闭
+    };
+
+    // Create a new XMLHttpRequest object
+    var xhr1 = new XMLHttpRequest();
+    // Define the request URL and method
+    var url = 'http://101.42.251.239:8080/getUserInfo';
+    var method = 'GET';
+    // Set up the request
+    xhr1.open(method, url, true);
+    xhr1.setRequestHeader('Content-Type', 'application/json');
+    // Create the request body
+    var requestBody = JSON.stringify({});
+    // Send the request
+    xhr1.send(requestBody);
+    // Set up the callback function to handle the response
+    xhr1.onload = function () {
+        
+        if (xhr1.status === 200) {
+            var response = JSON.parse(xhr1.responseText);
+            if (response.ret != 0 ) {
+                if (response.ret == 4) {
+                    window.location.href = "http://101.42.251.239:8080"
+                    return
+                }
+            }
+            // Update the user info on the page
+            document.getElementById('edit-profile-pic').src = response.pic;
+            document.getElementById('username').value = response.nick;
+            document.getElementById('uid').value = response.uid;
+        }else {
+            window.location.href = "http://101.42.251.239:8080"
+        }
+    };
+
+
+    var updateBtn = document.getElementById('submit');
+
+    updateBtn.addEventListener('click', function () {
+        var xhr = new XMLHttpRequest();
+        // 设置属性
+        xhr.open('post', 'http://101.42.251.239:8080/updateUserInfo');
+        // 如果想要使用post提交数据,必须添加此行
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        // 将数据通过send方法传递
+        var nick = document.getElementById("edit-profile-nick").value;
+        var pic = editProfilePic.src;
+        var formData = "nick="+nick+"&pic="+pic;
+        xhr.send(formData);
+        // 发送并接受返回值
+        xhr.onreadystatechange = function () {
+            // 这步为判断服务器是否正确响应
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    var obj = JSON.parse(xhr.responseText);
+                    if (obj.ret === 4) {
+                        window.location.href = obj.url;
+                    }else if (obj.ret === 0) {
+                        document.getElementById("username").value = nick;
+                        document.getElementById("edit-profile-pic").src = pic;
+                        //refreshPage()
+                        toastr.success("修改成功!");
+                    }else {
+                        toastr.error(obj.ret);
+                    }
+                }else {
+                    toastr.error("err!!!");
+                }
+            }
+            //closeEditProfileModal()
+        };
+    });
+
+
+    var editProfilePic = document.getElementById('edit-profile-pic');
+    // Upload button click event
+    editProfilePic.addEventListener('click', function () {
+        // 创建一个隐藏的文件选择输入
+        var fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.style.display = 'none';
+
+        // 添加文件选择事件监听器
+        fileInput.addEventListener('change', function(event) {
+            var file = event.target.files[0];
+            // 在这里可以处理选择的文件，例如上传到服务器等
+            console.log('已选择文件:', file);
+
+            if (file) {
+            var formData = new FormData();
+            formData.append('picture', file);
+
+            var uploadXHR = new XMLHttpRequest();
+            uploadXHR.open('POST', 'http://101.42.251.239:8080/uploadFile', true);
+
+            uploadXHR.onload = function () {
+                if (uploadXHR.status === 200) {
+                    var response = JSON.parse(uploadXHR.responseText);
+                    if (response.ret === 0) {
+                        editProfilePic.src = response.url;
+                        document.getElementById('edit-profile-pic').src = response.url;
+                    } else {
+                        alert('上传失败，请重试！');
+                    }
+                }
+            };
+            uploadXHR.send(formData);
+        }
+        });
+        // 触发文件选择对话框
+        fileInput.click();
+        });
+</script>
+</body>
+</html>
