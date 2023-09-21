@@ -198,8 +198,8 @@
         <div class="message-input">
             <input type="text" id="message-text" placeholder="输入...">
             <button id="send-btn">发布</button>
+        </div>
     </div>
-</div>
 
 <div class="modal" id="edit-profile-modal">
     <div class="modal-content">
@@ -255,44 +255,47 @@
         }
     };
 
-    // Create a new XMLHttpRequest object
-    var xhr = new XMLHttpRequest();
-    // Define the request URL and method
-    var url = 'http://101.42.251.239:8080/getMessageList';
-    var method = 'GET';
-    // Set up the request
-    xhr.open(method, url, true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    // Create the request body
-    var requestBody = JSON.stringify({});
-    // Send the request
-    xhr.send(requestBody);
-    // Set up the callback function to handle the response
-    xhr.onload = function () {
-        if (xhr.status === 200) {
-            var response = JSON.parse(xhr.responseText);
-            // Update the user info on the page
-            //Render the message list
-            var messageList = response.list;
-            var messageListElement = document.getElementById('message-list');
-            
-            for (var i = 0; i < messageList.length; i++) {
-                var messageItem = document.createElement('div');
-                messageItem.classList.add('message-item');
-            
-                var titleElement = document.createElement('h3');
-                titleElement.textContent = '新闻 ' + (i + 1);
-            
-                var contentElement = document.createElement('p');
-                contentElement.textContent = messageList[i].msg;
-            
-                messageItem.appendChild(titleElement);
-                messageItem.appendChild(contentElement);
-            
-                messageListElement.appendChild(messageItem);
+    var getMsgList = function() {
+        // Create a new XMLHttpRequest object
+        var xhr = new XMLHttpRequest();
+        // Define the request URL and method
+        var url = 'http://101.42.251.239:8080/getMessageList';
+        var method = 'GET';
+        // Set up the request
+        xhr.open(method, url, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        // Create the request body
+        var requestBody = JSON.stringify({});
+        // Send the request
+        xhr.send(requestBody);
+        // Set up the callback function to handle the response
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                // Update the user info on the page
+                //Render the message list
+                var messageList = response.list;
+                var messageListElement = document.getElementById('message-list');
+                
+                for (var i = 0; i < messageList.length; i++) {
+                    var messageItem = document.createElement('div');
+                    messageItem.classList.add('message-item');
+                
+                    var titleElement = document.createElement('h3');
+                    titleElement.textContent = '新闻 ' + (i + 1);
+                
+                    var contentElement = document.createElement('p');
+                    contentElement.textContent = messageList[i].msg;
+                
+                    messageItem.appendChild(titleElement);
+                    messageItem.appendChild(contentElement);
+                
+                    messageListElement.appendChild(messageItem);
+                }
             }
-        }
-    };
+        };
+    }
+    getMsgList()
 
     // Edit profile button click event
     var editProfileBtn = document.getElementById('edit-profile-btn');
@@ -414,6 +417,14 @@
                     }else if (obj.ret === 0) {
                         //refreshPage()
                         toastr.success("发布成功!");
+                        // 移除所有子元素
+                        var messageListTemp = document.getElementById("message-list");
+                        while (messageListTemp.firstChild) {
+                            messageListTemp.removeChild(messageListTemp.firstChild);
+                        }
+                        getMsgList()
+                        // 清空输入框
+                        document.getElementById("message-text").value = "";
                     }else {
                         toastr.error(obj.ret);
                     }

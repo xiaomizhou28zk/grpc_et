@@ -20,7 +20,7 @@ func GetMessageList(uid string) ([]*MessageInfo, error) {
 
 	sqlStr := "select id,message,image,owner,ctime,mtime,uid from message_tab"
 	if len(uid) != 0 {
-		sqlStr += fmt.Sprintf("where uid=%s", uid)
+		sqlStr += fmt.Sprintf("where uid='%s'", uid)
 	}
 
 	msgList := make([]*MessageInfo, 0)
@@ -45,7 +45,7 @@ func GetMessageList(uid string) ([]*MessageInfo, error) {
 
 func AddMessage(uid, msg, userName string) error {
 	t := time.Now().Unix()
-	sql := fmt.Sprintf("insert into message_tab(`message`,`owner`,`uid`,`ctime`,`mtime`) values(%s,%s,%s,%d,%d)",
+	sql := fmt.Sprintf("insert into message_tab(`message`,`owner`,`uid`,`ctime`,`mtime`) values('%s','%s','%s',%d,%d)",
 		msg, userName, uid, t, t)
 	_, err := db.Exec(sql)
 	if err != nil {

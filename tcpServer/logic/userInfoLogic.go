@@ -68,17 +68,3 @@ func (s *Server) UpdateUserInfo(ctx context.Context, req *pb.UpdateUserInfoReque
 
 	return rsp, nil
 }
-
-func (s *Server) PublishMessage(ctx context.Context, req *pb.PublishMessageRequest) (*pb.PublishMessageResponse, error) {
-	rsp := &pb.PublishMessageResponse{}
-	if len(req.GetMessage()) == 0 {
-		return rsp, nil
-	}
-
-	err := Dao.AddMessage(req.GetUid(), req.GetUserName(), req.GetMessage())
-	if err != nil {
-		log.Log.Errorf("PublishMessage err:%s", err)
-		return rsp, err
-	}
-	return rsp, nil
-}
