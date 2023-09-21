@@ -21,11 +21,11 @@ type userLoginRsp struct {
 
 // getUserInfoRsp 获取用户信息返回包
 type getUserInfoRsp struct {
-	Ret  int32  `json:"ret"`  //业务返回码
-	UID  string `json:"uid"`  //用户ID
-	Nick string `json:"nick"` //昵称
-	Pic  string `json:"pic"`  //头像
-	Url  string `json:"url"`  //跳转链接
+	Ret  int32    `json:"ret"`  //业务返回码
+	UID  string   `json:"uid"`  //用户ID
+	Nick string   `json:"nick"` //昵称
+	Pic  string   `json:"pic"`  //头像
+	Url  string   `json:"url"`  //跳转链接
 	List []string `json:"list"` //消息列表
 }
 
@@ -119,7 +119,6 @@ func GetUserInfo(w http.ResponseWriter, r *http.Request) {
 	sessionInfo, status := checkSession(r)
 	if !status {
 		log.Log.Errorf("get session err")
-		fmt.Println("111111")
 		rsp.Ret = common.InvalidSession
 		rsp.Url = config.Config.LoginPage
 		msg, _ := json.Marshal(rsp)
@@ -129,8 +128,7 @@ func GetUserInfo(w http.ResponseWriter, r *http.Request) {
 
 	u, err := getUserInfoRpc(sessionInfo.UID)
 	if err != nil {
-		fmt.Println("2222222")
-		log.Log.Errorf("get session err")
+		log.Log.Errorf("getUserInfoRpc err")
 		rsp.Ret = common.ServerErrCode
 		rsp.Url = config.Config.LoginPage
 		msg, _ := json.Marshal(rsp)
@@ -140,18 +138,6 @@ func GetUserInfo(w http.ResponseWriter, r *http.Request) {
 	rsp.UID = u.UID
 	rsp.Nick = u.Nick
 	rsp.Pic = u.Picture
-	rsp.List = []string{
-		"国家金融监督管理总局发布风险提示:防范虚假网络投资理财类诈骗",
-		"开辟绿色通道!河南公布“三秋”农机作业便民服务措施",
-		"近年来,山东省人大常委会坚持以习近平新时代中国特色社会主义思想为指导,认真贯彻落实习近平法治思想、习近平总书记关于坚持和完善人民代表大会制度的重要思想,坚决落实党对立法工作的全面领导,充分发挥人大主导作用,深入推进科学立法、民主立法、...",
-		"月底竣工 8月19日,在山西长铁绿能物流园项目一期工程施工现场,施工人员紧张施工,全速推进铁路敞顶箱装车平台及堆箱场地硬化工程建设进程。据悉,该项目一期工程将于8月底完成。届时,这里将成为自山东港口到长治地区铁矿石铁路运输的“中转站...",
-		"中新网郑州9月19日电 (记者 刘鹏)18日下午,国家地热能中心河南分中心与国际地热协会(以下简称IGA)召开座谈会,签署《河南省地热领域战略合作备忘录》",
-		"今年,从中央到地方一系列支持民营经济发展的举措鼓点更密、措施更实,民营企业发展信心更强,底气更足。山东是一片民营经济发展的沃土,拿出时不我待、只争朝夕的紧迫感继续聚焦民营经济出实招、下实功,全省民营经济就能稳住好势头、巩固...",
-	}
-	if u.UID == "9999910" {
-		rsp.List[0] = "杨大村罪行：1.胡乱扔袜子。 2.经常不洗头。 3.无恶不作"
-		rsp.List[1] = "杨大村语录：1.我比你强. 2.我这不单一. 3.咱俩今天开始要好好吃饭了"
-	}
 
 	msg, _ := json.Marshal(rsp)
 	_, _ = w.Write(msg)

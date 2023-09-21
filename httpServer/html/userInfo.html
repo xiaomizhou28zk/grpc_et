@@ -388,41 +388,37 @@
         };
     });
 
-    // sendBtn.addEventListener('click', function () {
-    //     var xhr = new XMLHttpRequest();
-    //     // 设置属性
-    //     xhr.open('post', 'http://101.42.251.239:8080/updateUserInfo');
-    //     // 如果想要使用post提交数据,必须添加此行
-    //     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    //     // 将数据通过send方法传递
-    //     var nick = document.getElementById("edit-profile-nick").value;
-    //     var pic = editProfilePic.src;
-    //     var formData = "nick="+nick+"&pic="+pic;
-    //     xhr.send(formData);
-    //     // 发送并接受返回值
-    //     xhr.onreadystatechange = function () {
-    //         // 这步为判断服务器是否正确响应
-    //         if (xhr.readyState === 4) {
-    //             if (xhr.status === 200) {
-    //                 var obj = JSON.parse(xhr.responseText);
-    //                 if (obj.ret === 4) {
-    //                     window.location.href = obj.url;
-    //                     return
-    //                 }else if (obj.ret === 0) {
-    //                     document.getElementById("user-nick").value = nick;
-    //                     document.getElementById("user-pic").src = pic;
-    //                     //refreshPage()
-    //                     toastr.success("修改成功!");
-    //                 }else {
-    //                     toastr.error(obj.ret);
-    //                 }
-    //             }else {
-    //                 toastr.error("err!!!");
-    //             }
-    //         }
-    //         closeEditProfileModal()
-    //     };
-    // });
+    sendBtn.addEventListener('click', function () {
+        var xhr = new XMLHttpRequest();
+        // 设置属性
+        xhr.open('post', 'http://101.42.251.239:8080/publishMessage');
+        // 如果想要使用post提交数据,必须添加此行
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        // 将数据通过send方法传递
+        var msg = document.getElementById("message-text").value;
+        var formData = "message="+msg;
+        xhr.send(formData);
+        // 发送并接受返回值
+        xhr.onreadystatechange = function () {
+            // 这步为判断服务器是否正确响应
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    var obj = JSON.parse(xhr.responseText);
+                    if (obj.ret === 4) {
+                        window.location.href = obj.url;
+                        return
+                    }else if (obj.ret === 0) {
+                        //refreshPage()
+                        toastr.success("发布成功!");
+                    }else {
+                        toastr.error(obj.ret);
+                    }
+                }else {
+                    toastr.error("err!!!");
+                }
+            }
+        };
+    });
 
 
     function closeEditProfileModal() {

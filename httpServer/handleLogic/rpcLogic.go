@@ -6,6 +6,7 @@ import (
 	"entryTask/common/log"
 	"entryTask/httpServer/common"
 	"entryTask/protocal/entry_task/pb"
+	"errors"
 	"fmt"
 
 	"google.golang.org/grpc"
@@ -180,4 +181,28 @@ func getMessageListRpc(uid string) (msgList []*pb.MessageInfo, err error) {
 	}
 	_ = common.MyPool.Put(*conn)
 	return resp.GetList(), nil
+}
+
+func publishMessage(uid, userName, msg string) error {
+	cli, conn, err := getClient()
+	if err != nil {
+		log.Log.Errorf("get conn err:%s", err)
+		return err
+	}
+	req := &pb.PublishMessageRequest{
+		Uid:      proto.String(uid),
+		UserName: proto.String(userName),
+		Message:  proto.String(msg),
+	}
+
+	resp, err := cli.PublishMessage(context.Background(), req)
+	if err != nil {
+		log.Log.Errorf("PublishMessage err:%s", err)
+		return err
+	}
+	if resp.GetRet() != 0 {
+		return errors.New("PublishMessage error")
+	}
+	_ = common.MyPool.Put(*conn)
+	return nil
 }
