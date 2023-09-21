@@ -396,8 +396,12 @@
         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         // 将数据通过send方法传递
         var msg = document.getElementById("message-text").value;
-        var formData = "message="+msg;
-        xhr.send(formData);
+
+        // 构建请求参数对象
+        var params = {
+            message: msg,
+        };
+        xhr.send(JSON.stringify(params));
         // 发送并接受返回值
         xhr.onreadystatechange = function () {
             // 这步为判断服务器是否正确响应
