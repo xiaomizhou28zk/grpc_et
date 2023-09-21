@@ -58,11 +58,14 @@ message MessageInfo {
 
 message GetMessageListRequest {
   optional string uid = 1;
+  optional int32 page = 2;
+  optional int32 page_size = 3;
 }
 
 message GetMessageListResponse {
   optional uint32 ret = 1;
   repeated MessageInfo list = 2;
+  optional uint32 toatl = 3;
 }
 
 message PublishMessageRequest {

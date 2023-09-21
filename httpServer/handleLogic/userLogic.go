@@ -118,10 +118,12 @@ func GetUserInfo(w http.ResponseWriter, r *http.Request) {
 
 	sessionInfo, status := checkSession(r)
 	if !status {
+		fmt.Println("checkSession err 11111")
 		log.Log.Errorf("get session err")
 		rsp.Ret = common.InvalidSession
 		rsp.Url = config.Config.LoginPage
 		msg, _ := json.Marshal(rsp)
+		fmt.Println("checkSession :", string(msg))
 		_, _ = w.Write(msg)
 		return
 	}
