@@ -118,71 +118,70 @@
            margin-left: -150px;
         }
 
-    .close-button {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      cursor: pointer;
-    }
+        .close-button {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          cursor: pointer;
+        }
 
-.profile-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px; /* 调整头像和输入框之间的间距 */
-}
+        .profile-section {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          margin-bottom: 20px; /* 调整头像和输入框之间的间距 */
+        }
 
-.profile-picture {
-  width: 100px; /* 调整头像容器的宽度 */
-  height: 100px; /* 调整头像容器的高度 */
-  border-radius: 50%; /* 将头像容器变为圆形 */
-  overflow: hidden; /* 隐藏头像溢出的部分 */
-}
+        .profile-picture {
+          width: 100px; /* 调整头像容器的宽度 */
+          height: 100px; /* 调整头像容器的高度 */
+          border-radius: 50%; /* 将头像容器变为圆形 */
+          overflow: hidden; /* 隐藏头像溢出的部分 */
+        }
 
-#edit-profile-pic {
-  width: 100%; /* 让头像填充整个容器 */
-  height: 100%; /* 让头像填充整个容器 */
-  object-fit: cover; /* 调整头像的缩放和裁剪方式 */
-}
+        #edit-profile-pic {
+          width: 100%; /* 让头像填充整个容器 */
+          height: 100%; /* 让头像填充整个容器 */
+          object-fit: cover; /* 调整头像的缩放和裁剪方式 */
+        }
 
-.profile-input {
-  margin-top: 10px; /* 调整输入框和头像之间的间距 */
-}
+        .profile-input {
+          margin-top: 10px; /* 调整输入框和头像之间的间距 */
+        }
 
-.button-container {
-  display: flex;
-  justify-content: center;
-}
+        .button-container {
+          display: flex;
+          justify-content: center;
+        }
 
-.message-input {
-    display: flex;
-    margin-top: 20px;
-}
+        /*消息发布相关开始*/
+        .message-input {
+            display: flex;
+            margin-top: 20px;
+        }
+        .message-input input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .message-input button {
+            padding: 10px 20px;
+            margin-left: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .message-input button:hover {
+            background-color: #45a049;
+        }
+        /*消息发布相关结束*/
 
-.message-input input[type="text"] {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 14px;
-}
-
-.message-input button {
-    padding: 10px 20px;
-    margin-left: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.message-input button:hover {
-    background-color: #45a049;
-}
-
-</style>
+    </style>
 </head>
 <body>
     <div class="container">
