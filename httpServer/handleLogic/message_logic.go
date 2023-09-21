@@ -23,6 +23,11 @@ type getMsgListRsp struct {
 	List []*MessageInfo `json:"list"`
 }
 
+type getMsgListRequest struct {
+	Page     int32 `json:"page"`
+	PageSize int32 `json:"pageSize"`
+}
+
 func GetMessageList(w http.ResponseWriter, r *http.Request) {
 	rsp := getMsgListRsp{Ret: common.SucCode}
 
@@ -35,7 +40,22 @@ func GetMessageList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	msgList, err := getMessageListRpc(sessionInfo.UID)
+	// 解析 JSON 参数
+	var req getMsgListRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		rsp.Ret = common.MissingParams
+		msg, _ := json.Marshal(rsp)
+		_, _ = w.Write(msg)
+		return
+	}
+	if req.Page < 1 {
+		req.PageSize = 1
+	}
+	if req.PageSize != 10 {
+		req.PageSize = 10
+	}
+
+	msgList, err := getMessageListRpc(sessionInfo.UID, req.Page, req.PageSize)
 	if err != nil {
 		log.Log.Errorf("getMessageListRpc err")
 		rsp.Ret = common.ServerErrCode

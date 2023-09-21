@@ -164,14 +164,16 @@ func refreshSessionRpc(sessionID string) {
 	_ = common.MyPool.Put(*conn)
 }
 
-func getMessageListRpc(uid string) (msgList []*pb.MessageInfo, err error) {
+func getMessageListRpc(uid string, page, pageSize int32) (msgList []*pb.MessageInfo, err error) {
 	cli, conn, err := getClient()
 	if err != nil {
 		log.Log.Errorf("get conn err:%s", err)
 		return
 	}
 	req := &pb.GetMessageListRequest{
-		Uid: proto.String(uid),
+		Uid:      proto.String(uid),
+		PageSize: proto.Int32(pageSize),
+		Page:     proto.Int32(page),
 	}
 
 	resp, err := cli.GetMessageList(context.Background(), req)
