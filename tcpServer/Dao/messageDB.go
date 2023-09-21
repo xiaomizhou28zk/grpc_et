@@ -22,7 +22,7 @@ func GetMessageList(uid string, page, pageSize int32) ([]*MessageInfo, error) {
 	if len(uid) != 0 {
 		sqlStr += fmt.Sprintf(" where uid='%s'", uid)
 	}
-	sqlStr += fmt.Sprintf(" limit %d, %d", (page-1)*pageSize, pageSize)
+	sqlStr += fmt.Sprintf(" order by ctime desc limit %d, %d", (page-1)*pageSize, pageSize)
 
 	msgList := make([]*MessageInfo, 0)
 	fmt.Println("sql:", sqlStr)

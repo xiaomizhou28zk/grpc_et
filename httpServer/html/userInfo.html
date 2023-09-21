@@ -217,10 +217,10 @@
 
         <div class="pagination" id="pagination"></div>
 
-        <div class="pagination-bar">
+        <!-- <div class="pagination-bar">
             <button id="prev-page-btn">上一页</button>
             <button id="next-page-btn">下一页</button>
-        </div>
+        </div> -->
     
         <div class="message-input">
             <input type="text" id="message-text" placeholder="输入...">
@@ -466,7 +466,14 @@
                         while (messageListTemp.firstChild) {
                             messageListTemp.removeChild(messageListTemp.firstChild);
                         }
-                        getMsgListFunc()
+                        getMsgListFunc(1, function(response) {
+                            // 在回调函数中处理返回值
+                            var rsp = response;
+                            var messageList = document.getElementById("message-list");
+                            messageList.innerHTML = "";
+                            showMsgList(rsp.list)
+                            renderPagination(rsp.count);
+                        });
                         // 清空输入框
                         document.getElementById("message-text").value = "";
                     }else {
@@ -522,13 +529,13 @@
             var messageItem = document.createElement('div');
             messageItem.classList.add('message-item');
         
-            var titleElement = document.createElement('h3');
-            titleElement.textContent = '新闻 ' + (i + 1);
+            //var titleElement = document.createElement('h5');
+            //titleElement.textContent = '消息 ' + (i + 1);
         
             var contentElement = document.createElement('p');
             contentElement.textContent = messageList[i].msg;
         
-            messageItem.appendChild(titleElement);
+            //messageItem.appendChild(titleElement);
             messageItem.appendChild(contentElement);
         
             messageListElement.appendChild(messageItem);

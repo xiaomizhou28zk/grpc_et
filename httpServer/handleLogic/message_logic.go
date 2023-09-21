@@ -21,7 +21,7 @@ type MessageInfo struct {
 type getMsgListRsp struct {
 	Ret      int32          `json:"ret"` //业务返回码
 	List     []*MessageInfo `json:"list"`
-	Count    int32          `json:count`
+	Count    int32          `json:"count"`
 	Page     int32          `json:"page"`
 	PageSize int32          `json:"page_size"`
 }
