@@ -5,19 +5,25 @@ import (
 	"entryTask/common/log"
 	"entryTask/protocal/entry_task/pb"
 	"entryTask/tcpServer/Dao"
-	
+
 	"google.golang.org/protobuf/proto"
 )
 
 func (s *Server) GetMessageList(ctx context.Context, req *pb.GetMessageListRequest) (*pb.GetMessageListResponse, error) {
 
 	rsp := &pb.GetMessageListResponse{}
-	
 
 	msgList, err := Dao.GetMessageList(req.GetUid(), req.GetPage(), req.GetPageSize())
 	if err != nil {
 		log.Log.Errorf("GetMessageList err:%s", err)
+		return rsp, err
 	}
+	count, err := Dao.GetMessageCount(req.GetUid())
+	if err != nil {
+		log.Log.Errorf("GetMessageList err:%s", err)
+		return rsp, err
+	}
+	rsp.Total = proto.Int32(count)
 	for _, elem := range msgList {
 		rsp.List = append(rsp.List, &pb.MessageInfo{
 			Id:    proto.Uint64(elem.ID),
@@ -42,11 +48,10 @@ func (s *Server) PublishMessage(ctx context.Context, req *pb.PublishMessageReque
 		return rsp, nil
 	}
 
-	err := Dao.AddMessage(req.GetUid(),  req.GetMessage(), req.GetUserName())
+	err := Dao.AddMessage(req.GetUid(), req.GetMessage(), req.GetUserName())
 	if err != nil {
 		log.Log.Errorf("PublishMessage err:%s", err)
 		return rsp, err
 	}
 	return rsp, nil
 }
-

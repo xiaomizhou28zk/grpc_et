@@ -164,7 +164,7 @@ func refreshSessionRpc(sessionID string) {
 	_ = common.MyPool.Put(*conn)
 }
 
-func getMessageListRpc(uid string, page, pageSize int32) (msgList []*pb.MessageInfo, err error) {
+func getMessageListRpc(uid string, page, pageSize int32) (msgList []*pb.MessageInfo, count int32, err error) {
 	cli, conn, err := getClient()
 	if err != nil {
 		log.Log.Errorf("get conn err:%s", err)
@@ -179,10 +179,10 @@ func getMessageListRpc(uid string, page, pageSize int32) (msgList []*pb.MessageI
 	resp, err := cli.GetMessageList(context.Background(), req)
 	if err != nil {
 		log.Log.Errorf("GetMessageList err:%s", err)
-		return nil, err
+		return nil, 0, err
 	}
 	_ = common.MyPool.Put(*conn)
-	return resp.GetList(), nil
+	return resp.GetList(), resp.GetTotal(), nil
 }
 
 func publishMessage(uid, userName, msg string) error {

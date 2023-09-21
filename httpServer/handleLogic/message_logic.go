@@ -19,11 +19,11 @@ type MessageInfo struct {
 }
 
 type getMsgListRsp struct {
-	Ret  int32          `json:"ret"` //业务返回码
-	List []*MessageInfo `json:"list"`
-	Count int32         `json:count`
-	Page int32          `json:"page"`
-	PageSize int32      `json:"page_size"`
+	Ret      int32          `json:"ret"` //业务返回码
+	List     []*MessageInfo `json:"list"`
+	Count    int32          `json:count`
+	Page     int32          `json:"page"`
+	PageSize int32          `json:"page_size"`
 }
 
 type getMsgListRequest struct {
@@ -62,7 +62,7 @@ func GetMessageList(w http.ResponseWriter, r *http.Request) {
 	rsp.Page = req.Page
 	rsp.PageSize = req.PageSize
 
-	msgList, err := getMessageListRpc(sessionInfo.UID, req.Page, req.PageSize)
+	msgList, count, err := getMessageListRpc(sessionInfo.UID, req.Page, req.PageSize)
 	if err != nil {
 		log.Log.Errorf("getMessageListRpc err")
 		rsp.Ret = common.ServerErrCode
@@ -81,6 +81,7 @@ func GetMessageList(w http.ResponseWriter, r *http.Request) {
 			MTime: elem.GetMtime(),
 		})
 	}
+	rsp.Count = count
 
 	msg, _ := json.Marshal(rsp)
 	_, _ = w.Write(msg)

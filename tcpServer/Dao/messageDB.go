@@ -56,11 +56,13 @@ func AddMessage(uid, msg, userName string) error {
 	return nil
 }
 
-func GetMessageCount() (int32, error) {
-	sql := "select count(*) from message_tab"
-	row, err := db.Query(sqlStr)
+func GetMessageCount(uid string) (int32, error) {
+	sql := fmt.Sprintf("select count(*) from message_tab where uid='%s'", uid)
+	var count int32
+	err := db.QueryRow(sql).Scan(&count)
 	if err != nil {
-		log.Log.Errorf("db get userinfo err:%s", err)
-		return nil, err
+		log.Log.Errorf("db GetMessageCount err:%s", err)
+		return 0, err
 	}
+	return count, nil
 }

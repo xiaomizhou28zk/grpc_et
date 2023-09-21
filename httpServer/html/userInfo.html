@@ -510,8 +510,9 @@
             var messageList = document.getElementById("message-list");
             messageList.innerHTML = "";
             showMsgList(rsp.list)
+            renderPagination(rsp.count);
         });
-        renderPagination();
+
     }
     renderMessages()
 
@@ -536,7 +537,7 @@
 
     // 渲染分页导航
     function renderPagination(msgCount) {
-        var totalPages = Math.ceil(100 / pageSize);
+        var totalPages = Math.ceil(msgCount / pageSize);
         var pagination = document.getElementById("pagination");
         pagination.innerHTML = "";
 

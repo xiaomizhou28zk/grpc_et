@@ -65,7 +65,7 @@ message GetMessageListRequest {
 message GetMessageListResponse {
   optional uint32 ret = 1;
   repeated MessageInfo list = 2;
-  optional uint32 toatl = 3;
+  optional int32 total = 3;
 }
 
 message PublishMessageRequest {
