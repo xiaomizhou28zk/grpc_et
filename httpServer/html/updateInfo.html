@@ -71,8 +71,72 @@
           object-fit: cover; /* 调整头像的缩放和裁剪方式 */
         }
     </style>
+    <style>
+        /* 弹窗剧中 */
+        .toast-center-center {
+           top: 50%;
+           left: 50%;
+           margin-top: -30px;
+           margin-left: -150px;
+        }
+    </style>
+    <style>
+        /*导航*/
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: #333;
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .navbar-brand {
+            color: #fff;
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .navbar-menu {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        .navbar-menu li {
+            margin-left: 20px;
+        }
+
+        .navbar-menu li a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .navbar-menu li a:hover {
+            color: #ff0;
+        }
+    </style>
 </head>
 <body>
+
+<div class="navbar">
+    <a href="#" class="navbar-brand">Logo</a>
+    <ul class="navbar-menu">
+        <li><a href="./userInfo.html">个人主页</a></li>
+        <li><a href="./updateInfo.html">资料修改</a></li>
+        <li><a href="#">Services</a></li>
+        <li><a href="#">Contact</a></li>
+    </ul>
+</div>
 
 <div class="container">
 <!--    <div class="avatar">   </div>-->
@@ -88,7 +152,7 @@
         <input type="text" id="username" name="username">
     </div>
     <div class="form-group">
-        <button type="submit">保存</button>
+        <button type="submit" id="submit">保存</button>
     </div>
 </div>
 
@@ -117,7 +181,7 @@
     xhr1.send(requestBody);
     // Set up the callback function to handle the response
     xhr1.onload = function () {
-        
+
         if (xhr1.status === 200) {
             var response = JSON.parse(xhr1.responseText);
             if (response.ret != 0 ) {
@@ -145,7 +209,7 @@
         // 如果想要使用post提交数据,必须添加此行
         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         // 将数据通过send方法传递
-        var nick = document.getElementById("edit-profile-nick").value;
+        var nick = document.getElementById("username").value;
         var pic = editProfilePic.src;
         var formData = "nick="+nick+"&pic="+pic;
         xhr.send(formData);
