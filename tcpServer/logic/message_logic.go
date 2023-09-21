@@ -14,7 +14,7 @@ func (s *Server) GetMessageList(ctx context.Context, req *pb.GetMessageListReque
 	rsp := &pb.GetMessageListResponse{}
 	
 
-	msgList, err := Dao.GetMessageList(req.GetUid())
+	msgList, err := Dao.GetMessageList(req.GetUid(), req.GetPage(), req.GetPageSize())
 	if err != nil {
 		log.Log.Errorf("GetMessageList err:%s", err)
 	}

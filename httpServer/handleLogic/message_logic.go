@@ -21,6 +21,9 @@ type MessageInfo struct {
 type getMsgListRsp struct {
 	Ret  int32          `json:"ret"` //业务返回码
 	List []*MessageInfo `json:"list"`
+	Count int32         `json:count`
+	Page int32          `json:"page"`
+	PageSize int32      `json:"page_size"`
 }
 
 type getMsgListRequest struct {
@@ -29,7 +32,9 @@ type getMsgListRequest struct {
 }
 
 func GetMessageList(w http.ResponseWriter, r *http.Request) {
-	rsp := getMsgListRsp{Ret: common.SucCode}
+	rsp := getMsgListRsp{
+		Ret: common.SucCode,
+	}
 
 	sessionInfo, status := checkSession(r)
 	if !status {
@@ -54,6 +59,8 @@ func GetMessageList(w http.ResponseWriter, r *http.Request) {
 	if req.PageSize != 10 {
 		req.PageSize = 10
 	}
+	rsp.Page = req.Page
+	rsp.PageSize = req.PageSize
 
 	msgList, err := getMessageListRpc(sessionInfo.UID, req.Page, req.PageSize)
 	if err != nil {

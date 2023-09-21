@@ -16,12 +16,13 @@ type MessageInfo struct {
 	Uid     string `xorm:"uid"`
 }
 
-func GetMessageList(uid string) ([]*MessageInfo, error) {
+func GetMessageList(uid string, page, pageSize int32) ([]*MessageInfo, error) {
 
 	sqlStr := "select id,message,image,owner,ctime,mtime,uid from message_tab"
 	if len(uid) != 0 {
 		sqlStr += fmt.Sprintf(" where uid='%s'", uid)
 	}
+	sqlStr += fmt.Sprintf(" limit %d, %d", (page-1)*pageSize, pageSize)
 
 	msgList := make([]*MessageInfo, 0)
 	fmt.Println("sql:", sqlStr)
@@ -53,4 +54,13 @@ func AddMessage(uid, msg, userName string) error {
 		return err
 	}
 	return nil
+}
+
+func GetMessageCount() (int32, error) {
+	sql := "select count(*) from message_tab"
+	row, err := db.Query(sqlStr)
+	if err != nil {
+		log.Log.Errorf("db get userinfo err:%s", err)
+		return nil, err
+	}
 }

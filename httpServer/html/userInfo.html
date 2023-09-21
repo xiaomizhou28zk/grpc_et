@@ -181,6 +181,27 @@
         }
         /*消息发布相关结束*/
 
+        /*分页*/
+        .pagination {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pagination a {
+            margin: 0 5px;
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .pagination a.active {
+            background-color: #ccc;
+        }
+            /*分页*/
+
     </style>
 </head>
 <body>
@@ -193,6 +214,13 @@
         <button id="edit-profile-btn">修改资料</button>
     
         <div class="message-list" id="message-list"></div>
+
+        <div class="pagination" id="pagination"></div>
+
+        <div class="pagination-bar">
+            <button id="prev-page-btn">上一页</button>
+            <button id="next-page-btn">下一页</button>
+        </div>
     
         <div class="message-input">
             <input type="text" id="message-text" placeholder="输入...">
@@ -263,17 +291,23 @@
     };
     
 
-    var getMsgList = function() {
+    function getMsgListFunc(page, callback) {
         // Create a new XMLHttpRequest object
         var xhr = new XMLHttpRequest();
         // Define the request URL and method
         var url = 'http://101.42.251.239:8080/getMessageList';
-        var method = 'GET';
+        var method = 'POST';
         // Set up the request
         xhr.open(method, url, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
+         // 构建请求参数对象
+        var params = {
+            page: page,
+            page_size: 10
+        };
+
         // Create the request body
-        var requestBody = JSON.stringify({});
+        var requestBody = JSON.stringify(params);
         // Send the request
         xhr.send(requestBody);
         // Set up the callback function to handle the response
@@ -283,27 +317,28 @@
                 // Update the user info on the page
                 //Render the message list
                 var messageList = response.list;
-                var messageListElement = document.getElementById('message-list');
+                callback(response)
+                return
+                // var messageListElement = document.getElementById('message-list');
                 
-                for (var i = 0; i < messageList.length; i++) {
-                    var messageItem = document.createElement('div');
-                    messageItem.classList.add('message-item');
+                // for (var i = 0; i < messageList.length; i++) {
+                //     var messageItem = document.createElement('div');
+                //     messageItem.classList.add('message-item');
                 
-                    var titleElement = document.createElement('h3');
-                    titleElement.textContent = '新闻 ' + (i + 1);
+                //     var titleElement = document.createElement('h3');
+                //     titleElement.textContent = '新闻 ' + (i + 1);
                 
-                    var contentElement = document.createElement('p');
-                    contentElement.textContent = messageList[i].msg;
+                //     var contentElement = document.createElement('p');
+                //     contentElement.textContent = messageList[i].msg;
                 
-                    messageItem.appendChild(titleElement);
-                    messageItem.appendChild(contentElement);
+                //     messageItem.appendChild(titleElement);
+                //     messageItem.appendChild(contentElement);
                 
-                    messageListElement.appendChild(messageItem);
-                }
+                //     messageListElement.appendChild(messageItem);
+                // }
             }
         };
-    }
-    getMsgList()
+    };
 
     // Edit profile button click event
     var editProfileBtn = document.getElementById('edit-profile-btn');
@@ -431,7 +466,7 @@
                         while (messageListTemp.firstChild) {
                             messageListTemp.removeChild(messageListTemp.firstChild);
                         }
-                        getMsgList()
+                        getMsgListFunc()
                         // 清空输入框
                         document.getElementById("message-text").value = "";
                     }else {
@@ -456,38 +491,52 @@
     }
 
     var messages = []; // 存储所有的消息
-    var pageSize = 5; // 每页显示的消息数量
+    var pageSize = 10; // 每页显示的消息数量
     var currentPage = 1; // 当前页码
 
-    // 添加新消息到消息列表中
-    function addMessage(message) {
-        messages.push(message);
-        renderMessages();
-    }
 
     // 渲染当前页的消息列表
     function renderMessages() {
-        var startIndex = (currentPage - 1) * pageSize;
-        var endIndex = startIndex + pageSize;
-        var messagesToRender = messages.slice(startIndex, endIndex);
+        // var startIndex = (currentPage - 1) * pageSize;
+        // var endIndex = startIndex + pageSize;
+        // var messagesToRender = messages.slice(startIndex, endIndex);
 
-        var messageList = document.getElementById("message-list");
-        messageList.innerHTML = "";
-
-        for (var i = 0; i < messagesToRender.length; i++) {
-            var message = messagesToRender[i];
-            var messageElement = document.createElement("div");
-            messageElement.className = "message";
-            messageElement.textContent = message;
-            messageList.appendChild(messageElement);
+        if (currentPage < 1) {
+            return
         }
-
+        getMsgListFunc(currentPage, function(response) {
+            // 在回调函数中处理返回值
+            var rsp = response;
+            var messageList = document.getElementById("message-list");
+            messageList.innerHTML = "";
+            showMsgList(rsp.list)
+        });
         renderPagination();
+    }
+    renderMessages()
+
+    function showMsgList(messageList) {
+        var messageListElement = document.getElementById('message-list');
+        for (var i = 0; i < messageList.length; i++) {
+            var messageItem = document.createElement('div');
+            messageItem.classList.add('message-item');
+        
+            var titleElement = document.createElement('h3');
+            titleElement.textContent = '新闻 ' + (i + 1);
+        
+            var contentElement = document.createElement('p');
+            contentElement.textContent = messageList[i].msg;
+        
+            messageItem.appendChild(titleElement);
+            messageItem.appendChild(contentElement);
+        
+            messageListElement.appendChild(messageItem);
+        }
     }
 
     // 渲染分页导航
-    function renderPagination() {
-        var totalPages = Math.ceil(messages.length / pageSize);
+    function renderPagination(msgCount) {
+        var totalPages = Math.ceil(100 / pageSize);
         var pagination = document.getElementById("pagination");
         pagination.innerHTML = "";
 
@@ -532,9 +581,6 @@
         addMessage(messageText);
         document.getElementById("message-text").value = "";
     });
-
-    // 初始化渲染消息列表和分页导航
-    renderMessages();
 
 </script>
 
