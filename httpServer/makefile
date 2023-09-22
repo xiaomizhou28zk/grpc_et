@@ -8,3 +8,6 @@ run:
 .PHONY: clean
 clean:
 	go clean
+.PHONY: api
+api:
+	protoc --go_out=../protocal/ --go-grpc_out=../protocal/ --go-grpc_opt=require_unimplemented_servers=false --proto_path=../protocal/  ../protocal/et_tcp.proto

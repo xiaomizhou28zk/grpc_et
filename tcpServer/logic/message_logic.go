@@ -5,6 +5,7 @@ import (
 	"entryTask/common/log"
 	"entryTask/protocal/entry_task/pb"
 	"entryTask/tcpServer/Dao"
+	"errors"
 
 	"google.golang.org/protobuf/proto"
 )
@@ -51,6 +52,19 @@ func (s *Server) PublishMessage(ctx context.Context, req *pb.PublishMessageReque
 	err := Dao.AddMessage(req.GetUid(), req.GetMessage(), req.GetUserName())
 	if err != nil {
 		log.Log.Errorf("PublishMessage err:%s", err)
+		return rsp, err
+	}
+	return rsp, nil
+}
+
+func (s *Server) DeleteMessage(ctx context.Context, req *pb.DeleteMessageRequest) (*pb.DeleteMessageResponse, error) {
+	rsp := &pb.DeleteMessageResponse{}
+	if req.GetUid() == "" || req.GetMsgId() == 0 {
+		return rsp, errors.New("DeleteMessage params err")
+	}
+	err := Dao.DeleteMessage(req.GetMsgId())
+	if err != nil {
+		log.Log.Errorf("DeleteMessage err:%s", err)
 		return rsp, err
 	}
 	return rsp, nil

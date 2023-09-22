@@ -137,3 +137,46 @@ func PublishMessage(w http.ResponseWriter, r *http.Request) {
 	msg, _ := json.Marshal(rsp)
 	_, _ = w.Write(msg)
 }
+
+type DeleteRequest struct {
+	MessageId uint64 `json:"message_id"`
+}
+type DeleteResponse struct {
+	Ret int32  `json:"ret"`
+	Msg string `json:"msg"`
+	Url string `json:"url"`
+}
+
+func DeleteMessage(w http.ResponseWriter, r *http.Request) {
+	rsp := DeleteResponse{}
+
+	// 解析 JSON 参数
+	var params DeleteRequest
+	if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
+		rsp.Ret = common.MissingParams
+		msg, _ := json.Marshal(rsp)
+		_, _ = w.Write(msg)
+		return
+	}
+
+	sessionInfo, status := checkSession(r)
+	if !status {
+		log.Log.Errorf("get session err")
+		rsp.Ret = common.InvalidSession
+		rsp.Url = config.Config.LoginPage
+		msg, _ := json.Marshal(rsp)
+		_, _ = w.Write(msg)
+		return
+	}
+
+	err := deleteMessageRpc(sessionInfo.UID, params.MessageId)
+	if err != nil {
+		log.Log.Errorf("deleteMessageRpc err")
+		rsp.Ret = common.ServerErrCode
+		msg, _ := json.Marshal(rsp)
+		_, _ = w.Write(msg)
+	}
+
+	msg, _ := json.Marshal(rsp)
+	_, _ = w.Write(msg)
+}

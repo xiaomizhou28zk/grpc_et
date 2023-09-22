@@ -77,6 +77,16 @@ message PublishMessageResponse {
   optional uint32 ret = 1;
 }
 
+message DeleteMessageRequest {
+  optional string uid = 1;
+  optional uint64 msg_id = 2;
+  optional string note = 3;
+}
+
+message DeleteMessageResponse {
+  optional uint32 ret = 1;
+}
+
 service EntryTask {
   rpc GetUserInfo (GetUserInfoRequest) returns (GetUserInfoResponse) {}
   rpc UpdateUserInfo (UpdateUserInfoRequest) returns (UpdateUserInfoResponse) {}

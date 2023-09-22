@@ -332,7 +332,7 @@
                 return
             }
         };
-    };
+    }
 
     // Edit profile button click event
     //var editProfileBtn = document.getElementById('edit-profile-btn');
@@ -429,9 +429,38 @@
     }
     renderMessages()
 
-    function deleteMsg() {
+     function deleteMsg(page) {
+         // Create a new XMLHttpRequest object
+         var xhr = new XMLHttpRequest();
+         // Define the request URL and method
+         var url = 'http://101.42.251.239:8080/getMessageList';
+         var method = 'POST';
+         // Set up the request
+         xhr.open(method, url, true);
+         xhr.setRequestHeader('Content-Type', 'application/json');
+         // 构建请求参数对象
+         var params = {
+             page: page,
+             page_size: 10
+         };
 
-    }
+         // Create the request body
+         var requestBody = JSON.stringify(params);
+         // Send the request
+         xhr.send(requestBody);
+         // Set up the callback function to handle the response
+         xhr.onload = function () {
+             if (xhr.status === 200) {
+                 var response = JSON.parse(xhr.responseText);
+                 if (response.ret === 0) {
+                     toastr.success("删除成功!");
+                 }else {
+                     toastr.error("删除失败!")
+                 }
+                 return
+             }
+         };
+     };
 
     function showMsgList(messageList) {
         var messageListElement = document.getElementById('message-list');
@@ -452,12 +481,13 @@
             deleteButton.addEventListener("click", function() {
             // 删除按钮点击事件处理函数
             messageItem.remove();
+            deleteMsg();
             });
         
             //messageItem.appendChild(titleElement);
             messageItem.appendChild(contentElement);
             messageItem.appendChild(deleteButton);
-        
+
             messageListElement.appendChild(messageItem);
         }
     }

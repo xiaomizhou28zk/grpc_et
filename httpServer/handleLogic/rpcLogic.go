@@ -208,3 +208,26 @@ func publishMessage(uid, userName, msg string) error {
 	_ = common.MyPool.Put(*conn)
 	return nil
 }
+
+func deleteMessageRpc(uid string, msgId uint64) error {
+	cli, conn, err := getClient()
+	if err != nil {
+		log.Log.Errorf("get conn err:%s", err)
+		return err
+	}
+	req := &pb.DeleteMessageRequest{
+		Uid:   proto.String(uid),
+		MsgId: proto.Uint64(msgId),
+	}
+
+	resp, err := cli.DeleteMessage(context.Background(), req)
+	if err != nil {
+		log.Log.Errorf("DeleteMessage err:%s", err)
+		return err
+	}
+	if resp.GetRet() != 0 {
+		return errors.New("DeleteMessage error")
+	}
+	_ = common.MyPool.Put(*conn)
+	return nil
+}

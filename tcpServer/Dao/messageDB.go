@@ -66,3 +66,12 @@ func GetMessageCount(uid string) (int32, error) {
 	}
 	return count, nil
 }
+
+func DeleteMessage(id uint64) error {
+	sql := fmt.Sprintf("delete message_tab where id=%d", id)
+	_, err := db.Exec(sql)
+	if err != nil {
+		return err
+	}
+	return nil
+}

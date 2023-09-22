@@ -29,6 +29,7 @@ type EntryTaskClient interface {
 	SetSessionInfo(ctx context.Context, in *SetSessionInfoRequest, opts ...grpc.CallOption) (*SetSessionInfoResponse, error)
 	GetMessageList(ctx context.Context, in *GetMessageListRequest, opts ...grpc.CallOption) (*GetMessageListResponse, error)
 	PublishMessage(ctx context.Context, in *PublishMessageRequest, opts ...grpc.CallOption) (*PublishMessageResponse, error)
+	DeleteMessage(ctx context.Context, in *DeleteMessageRequest, opts ...grpc.CallOption) (*DeleteMessageResponse, error)
 }
 
 type entryTaskClient struct {
@@ -102,6 +103,15 @@ func (c *entryTaskClient) PublishMessage(ctx context.Context, in *PublishMessage
 	return out, nil
 }
 
+func (c *entryTaskClient) DeleteMessage(ctx context.Context, in *DeleteMessageRequest, opts ...grpc.CallOption) (*DeleteMessageResponse, error) {
+	out := new(DeleteMessageResponse)
+	err := c.cc.Invoke(ctx, "/entry_task.EntryTask/DeleteMessage", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // EntryTaskServer is the server API for EntryTask service.
 // All implementations should embed UnimplementedEntryTaskServer
 // for forward compatibility
@@ -113,6 +123,7 @@ type EntryTaskServer interface {
 	SetSessionInfo(context.Context, *SetSessionInfoRequest) (*SetSessionInfoResponse, error)
 	GetMessageList(context.Context, *GetMessageListRequest) (*GetMessageListResponse, error)
 	PublishMessage(context.Context, *PublishMessageRequest) (*PublishMessageResponse, error)
+	DeleteMessage(context.Context, *DeleteMessageRequest) (*DeleteMessageResponse, error)
 }
 
 // UnimplementedEntryTaskServer should be embedded to have forward compatible implementations.
@@ -139,6 +150,9 @@ func (UnimplementedEntryTaskServer) GetMessageList(context.Context, *GetMessageL
 }
 func (UnimplementedEntryTaskServer) PublishMessage(context.Context, *PublishMessageRequest) (*PublishMessageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PublishMessage not implemented")
+}
+func (UnimplementedEntryTaskServer) DeleteMessage(context.Context, *DeleteMessageRequest) (*DeleteMessageResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteMessage not implemented")
 }
 
 // UnsafeEntryTaskServer may be embedded to opt out of forward compatibility for this service.
@@ -278,6 +292,24 @@ func _EntryTask_PublishMessage_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _EntryTask_DeleteMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteMessageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EntryTaskServer).DeleteMessage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/entry_task.EntryTask/DeleteMessage",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EntryTaskServer).DeleteMessage(ctx, req.(*DeleteMessageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // EntryTask_ServiceDesc is the grpc.ServiceDesc for EntryTask service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -312,6 +344,10 @@ var EntryTask_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PublishMessage",
 			Handler:    _EntryTask_PublishMessage_Handler,
+		},
+		{
+			MethodName: "DeleteMessage",
+			Handler:    _EntryTask_DeleteMessage_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
