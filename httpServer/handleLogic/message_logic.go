@@ -1,6 +1,7 @@
 package handleLogic
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"entryTask/common/log"
 	"entryTask/httpServer/common"
@@ -71,10 +72,16 @@ func GetMessageList(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, elem := range msgList {
+		// Base64 解码
+		decoded, err := base64.StdEncoding.DecodeString(elem.GetMsg())
+		if err != nil {
+			log.Log.Errorf("getMessageListRpc err:%s", err)
+			return
+		}
 		rsp.List = append(rsp.List, &MessageInfo{
 			UID:   elem.GetUid(),
 			ID:    elem.GetId(),
-			Msg:   elem.GetMsg(),
+			Msg:   string(decoded),
 			Image: elem.GetImage(),
 			Owner: elem.GetOwner(),
 			CTime: elem.GetCtime(),
@@ -126,7 +133,8 @@ func PublishMessage(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write(msg)
 	}
 
-	err = publishMessage(u.UID, u.Nick, params.Message)
+	message := base64.StdEncoding.EncodeToString([]byte(params.Message))
+	err = publishMessage(u.UID, u.Nick, message)
 	if err != nil {
 		log.Log.Errorf("publishMessage err")
 		rsp.Ret = common.ServerErrCode
