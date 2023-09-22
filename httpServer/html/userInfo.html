@@ -442,8 +442,12 @@
             messageItem.classList.add('message-item');
         
             //var titleElement = document.createElement('h5');
-            //titleElement.textContent = '消息 ' + (i + 1);
-        
+            //titleElement.textContent = '发布日期: ' + (i + 1);
+
+            // var timeElement = document.createElement('h6');
+            // timeElement.textContent = '发布日期: ' + messageList.c_time;
+
+
             var contentElement = document.createElement('p');
             contentElement.textContent = messageList[i].msg;
 
@@ -462,6 +466,10 @@
             //messageItem.appendChild(titleElement);
             messageItem.appendChild(contentElement);
             messageItem.appendChild(deleteButton);
+
+
+            // 将 timeElement 插入到 deleteButton 后面
+            messageItem.insertBefore(timeElement, deleteButton.nextSibling);
 
             messageListElement.appendChild(messageItem);
         }

@@ -15,8 +15,8 @@ type MessageInfo struct {
 	Image string `json:"image"`
 	ID    uint64 `json:"id"`
 	Owner string `json:"owner"`
-	CTime uint64 `json:"c_time"`
-	MTime uint64 `json:"m_time"`
+	CTime string `json:"c_time"`
+	MTime string `json:"m_time"`
 }
 
 type getMsgListRsp struct {
@@ -84,8 +84,8 @@ func GetMessageList(w http.ResponseWriter, r *http.Request) {
 			Msg:   string(decoded),
 			Image: elem.GetImage(),
 			Owner: elem.GetOwner(),
-			CTime: elem.GetCtime(),
-			MTime: elem.GetMtime(),
+			CTime: common.GetTimeFromTimestamp(elem.GetCtime()),
+			MTime: common.GetTimeFromTimestamp(elem.GetMtime()),
 		})
 	}
 	rsp.Count = count
