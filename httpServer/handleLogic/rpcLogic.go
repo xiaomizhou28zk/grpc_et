@@ -25,11 +25,14 @@ func getClient() (pb.EntryTaskClient, *common.ConnRes, error) {
 
 // getUserInfoRpc 获取用户信息
 func getUserInfoRpc(uid string) (userInfo common.UserInfo, err error) {
+	fmt.Println("getUserInfoRpc 1")
 	cli, conn, err := getClient()
 	if err != nil {
+		fmt.Println("getUserInfoRpc 1.1", err)
 		log.Log.Errorf("get conn err:%s", err)
 		return
 	}
+	fmt.Println("getUserInfoRpc 2")
 	req := &pb.GetUserInfoRequest{
 		Uid: proto.String(uid),
 	}
@@ -40,6 +43,7 @@ func getUserInfoRpc(uid string) (userInfo common.UserInfo, err error) {
 		fmt.Println("GetUserInfo err:", err)
 		return userInfo, err
 	}
+	fmt.Println("getUserInfoRpc 3")
 
 	userInfo = common.UserInfo{
 		UID:      uid,
@@ -115,6 +119,7 @@ func getSessionInfo(sessionID string) (sessionInfo common.SessionInfo, err error
 func setSessionRpc(sessionID string, info common.SessionInfo) {
 	cli, conn, err := getClient()
 	if err != nil {
+		fmt.Println("setSessionRpc err1", err)
 		log.Log.Errorf("get conn err:%s", err)
 		return
 	}
@@ -125,11 +130,13 @@ func setSessionRpc(sessionID string, info common.SessionInfo) {
 	}
 	resp, err := cli.SetSessionInfo(context.Background(), req)
 	if err != nil {
+		fmt.Println("setSessionRpc err2", err)
 		fmt.Printf("session err:%s   uid:%s\n", err, info.UID)
 		log.Log.Errorf("err:%s", err)
 		return
 	}
 	if resp.GetRet() != 0 {
+		fmt.Println("setSessionRpc err3")
 		log.Log.Errorf("err ret:%d", resp.GetRet())
 		return
 	}
@@ -137,6 +144,7 @@ func setSessionRpc(sessionID string, info common.SessionInfo) {
 
 	err = common.MyPool.Put(*conn)
 	if err != nil {
+		fmt.Println("setSessionRpc err4", err)
 		fmt.Println("session put err:", err)
 	}
 }

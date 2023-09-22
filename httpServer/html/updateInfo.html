@@ -140,6 +140,7 @@
         <li><a href="./updateInfo.html">个人资料</a></li>
         <li><a href="#">Services</a></li>
         <li><a href="#">Contact</a></li>
+        <li><a href="#" id="logout-btn">退出登录</a></li>
     </ul>
 </div>
 
@@ -287,6 +288,13 @@
         // 触发文件选择对话框
         fileInput.click();
         });
+
+        // 添加点击事件监听器
+        document.getElementById("logout-btn").addEventListener("click", myFunction);
+        // 定义 myFunction 函数
+        function myFunction() {
+        logout()
+        }
 </script>
 </body>
 </html>

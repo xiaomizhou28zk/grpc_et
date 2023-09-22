@@ -54,6 +54,7 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 	rsp := userLoginRsp{
 		Ret: common.SucCode,
 	}
+	fmt.Println("UserLogin 11")
 
 	// 解析 JSON 参数
 	var params LoginParams
@@ -61,8 +62,11 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 		rsp.Ret = common.MissingParams
 		msg, _ := json.Marshal(rsp)
 		_, _ = w.Write(msg)
+		fmt.Println("UserLogin 2", err)
 		return
 	}
+
+	fmt.Println("UserLogin 2.2")
 
 	//_ = r.ParseForm()
 	pwd := params.PWD
@@ -71,29 +75,37 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 		rsp.Ret = common.MissingParams
 		msg, _ := json.Marshal(rsp)
 		_, _ = w.Write(msg)
+		fmt.Println("UserLogin 3")
 		return
 	}
+	fmt.Println("UserLogin 2.3")
 
 	userInfo, err := getUserInfoRpc(uid)
 	if err != nil {
 		rsp.Ret = common.ServerErrCode
 		msg, _ := json.Marshal(rsp)
 		_, _ = w.Write(msg)
+		fmt.Println("UserLogin 4", err)
 		return
 	}
+	fmt.Println("UserLogin 2.4")
 
 	md5Pwd := encryptedByMD5(uid + pwd)
 	if userInfo.PassWord != md5Pwd {
 		rsp.Ret = common.WrongAccountInfoCode
 		msg, _ := json.Marshal(rsp)
 		_, _ = w.Write(msg)
+		fmt.Println("UserLogin 5", err)
 		return
 	}
+	fmt.Println("UserLogin 2.5")
 
 	sessionID := createSessionID(uid)
 	http.SetCookie(w, &http.Cookie{Name: "uid", Value: uid, Path: "/", HttpOnly: false, MaxAge: 3600})
 	cookie := http.Cookie{Name: "sessionID", Value: sessionID, Path: "/", HttpOnly: false, MaxAge: 3600}
 	http.SetCookie(w, &cookie)
+
+	fmt.Println("UserLogin 5.5")
 
 	//离线处理session
 	setSession(sessionID, r, userInfo)
@@ -104,6 +116,7 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 	rsp.Url = config.Config.UserInfoPage
 	msg, _ := json.Marshal(rsp)
 	_, _ = w.Write(msg)
+	fmt.Println("UserLogin 6")
 
 }
 

@@ -9,6 +9,7 @@ import (
 	"github.com/garyburd/redigo/redis"
 	"golang.org/x/net/context"
 	"google.golang.org/protobuf/proto"
+	"fmt"
 )
 
 // GetSessionInfo 获取会话信息
@@ -50,6 +51,7 @@ func (s *Server) RefreshSession(ctx context.Context, req *pb.RefreshSessionReque
 func (s *Server) SetSessionInfo(ctx context.Context, req *pb.SetSessionInfoRequest) (*pb.SetSessionInfoResponse, error) {
 
 	rsp := &pb.SetSessionInfoResponse{}
+	fmt.Println("SetSessionInfo 1")
 
 	c := Dao.RedisClient.Get()
 
@@ -57,6 +59,7 @@ func (s *Server) SetSessionInfo(ctx context.Context, req *pb.SetSessionInfoReque
 
 	_, err := c.Do("SETEX", req.GetSessionId(), config.Config.SessionExpireTime, req.GetSessionInfo())
 	if err != nil {
+		fmt.Println("SetSessionInfo err", err)
 		rsp.Ret = proto.Int32(-1)
 		return rsp, err
 	}
