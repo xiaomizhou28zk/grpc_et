@@ -134,52 +134,6 @@
             color: #666666;
         }
 
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 9999;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 5px;
-            text-align: center;
-        }
-
-        .modal img {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            margin-bottom: 10px;
-        }
-
-        .modal input[type="file"] {
-            margin-bottom: 10px;
-        }
-
-        .modal button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: #ffffff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .modal-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        position: relative;
-        }
         .toast-center-center {
            top: 50%;
            left: 50%;
@@ -303,24 +257,6 @@
         </div>
     </div>
 
-<div class="modal" id="edit-profile-modal">
-    <div class="modal-content">
-      <h2>修改资料</h2>
-      <div class="profile-section">
-        <div class="profile-picture">
-          <img id="edit-profile-pic" src="" alt="User Picture">
-        </div>
-        <div class="profile-input">
-          <input type="text" id="edit-profile-nick" placeholder="在此输入...">
-        </div>
-      </div>
-      <div class="button-container">
-        <button id="update-btn">更新资料</button>
-      </div>
-      <span class="close-button" onclick="closeModal()">x</span>
-    </div>
-</div>
-
 <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
 <script src="https://cdn.bootcss.com/toastr.js/latest/js/toastr.min.js"></script>
 
@@ -403,43 +339,6 @@
     var editProfileModal = document.getElementById('edit-profile-modal');
     var editProfilePic = document.getElementById('edit-profile-pic');
     var editProfileNick = document.getElementById('edit-profile-nick');
-    var updateBtn = document.getElementById('update-btn');
-   
-    updateBtn.addEventListener('click', function () {
-        var xhr = new XMLHttpRequest();
-        // 设置属性
-        xhr.open('post', 'http://101.42.251.239:8080/updateUserInfo');
-        // 如果想要使用post提交数据,必须添加此行
-        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        // 将数据通过send方法传递
-        var nick = document.getElementById("edit-profile-nick").value;
-        var pic = editProfilePic.src;
-        var formData = "nick="+nick+"&pic="+pic;
-        xhr.send(formData);
-        // 发送并接受返回值
-        xhr.onreadystatechange = function () {
-            // 这步为判断服务器是否正确响应
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    var obj = JSON.parse(xhr.responseText);
-                    if (obj.ret === 4) {
-                        window.location.href = obj.url;
-                        return
-                    }else if (obj.ret === 0) {
-                        document.getElementById("user-nick").value = nick;
-                        document.getElementById("user-pic").src = pic;
-                        //refreshPage()
-                        toastr.success("修改成功!");
-                    }else {
-                        toastr.error(obj.ret);
-                    }
-                }else {
-                    toastr.error("err!!!");
-                }
-            }
-            closeEditProfileModal()
-        };
-    });
 
     var sendBtn = document.getElementById('send-btn');
     sendBtn.addEventListener('click', function () {
@@ -531,7 +430,7 @@
     renderMessages()
 
     function deleteMsg() {
-        
+
     }
 
     function showMsgList(messageList) {

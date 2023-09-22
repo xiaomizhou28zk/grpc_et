@@ -4,4 +4,4 @@ http_server
 tcp_server
 .vscode/
 .idea
-dump.rdb
+*dump.rdb*
