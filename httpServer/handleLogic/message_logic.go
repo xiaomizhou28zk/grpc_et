@@ -88,7 +88,7 @@ func GetMessageList(w http.ResponseWriter, r *http.Request) {
 }
 
 type PublishRequest struct {
-	Message string `json:"message"`
+	MessageId string `json:"message_id"`
 }
 type PublishResponse struct {
 	Ret int32  `json:"ret"`
@@ -126,7 +126,7 @@ func PublishMessage(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write(msg)
 	}
 
-	err = publishMessage(u.UID, u.Nick, params.Message)
+	err = publishMessage(u.UID, u.Nick, params.MessageId)
 	if err != nil {
 		log.Log.Errorf("publishMessage err")
 		rsp.Ret = common.ServerErrCode

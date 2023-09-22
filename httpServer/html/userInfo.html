@@ -429,19 +429,18 @@
     }
     renderMessages()
 
-     function deleteMsg(page) {
+     function deleteMsg(msg_id) {
          // Create a new XMLHttpRequest object
          var xhr = new XMLHttpRequest();
          // Define the request URL and method
-         var url = 'http://101.42.251.239:8080/getMessageList';
+         var url = 'http://101.42.251.239:8080/deleteMessage';
          var method = 'POST';
          // Set up the request
          xhr.open(method, url, true);
          xhr.setRequestHeader('Content-Type', 'application/json');
          // 构建请求参数对象
          var params = {
-             page: page,
-             page_size: 10
+             message_id: msg_id,
          };
 
          // Create the request body
@@ -481,7 +480,7 @@
             deleteButton.addEventListener("click", function() {
             // 删除按钮点击事件处理函数
             messageItem.remove();
-            deleteMsg();
+            deleteMsg(messageList[i].id);
             });
         
             //messageItem.appendChild(titleElement);
@@ -524,21 +523,21 @@
         }
     });
 
-    // 下一页按钮点击事件处理
-    document.getElementById("next-page-btn").addEventListener("click", function() {
-        var totalPages = Math.ceil(messages.length / pageSize);
-        if (currentPage < totalPages) {
-            currentPage++;
-            renderMessages();
-        }
-    });
-
-    // 监听发布按钮的点击事件
-    document.getElementById("send-btn").addEventListener("click", function() {
-        var messageText = document.getElementById("message-text").value;
-        addMessage(messageText);
-        document.getElementById("message-text").value = "";
-    });
+    // // 下一页按钮点击事件处理
+    // document.getElementById("next-page-btn").addEventListener("click", function() {
+    //     var totalPages = Math.ceil(messages.length / pageSize);
+    //     if (currentPage < totalPages) {
+    //         currentPage++;
+    //         renderMessages();
+    //     }
+    // });
+    //
+    // // 监听发布按钮的点击事件
+    // document.getElementById("send-btn").addEventListener("click", function() {
+    //     var messageText = document.getElementById("message-text").value;
+    //     addMessage(messageText);
+    //     document.getElementById("message-text").value = "";
+    // });
 
 </script>
 

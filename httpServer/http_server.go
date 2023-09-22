@@ -18,6 +18,7 @@ func registerHandler() {
 	http.HandleFunc("/uploadFile", handleLogic.UploadFile)
 	http.HandleFunc("/getMessageList", handleLogic.GetMessageList)
 	http.HandleFunc("/publishMessage", handleLogic.PublishMessage)
+	http.HandleFunc("/deleteMessage", handleLogic.DeleteMessage)
 
 	http.Handle("/html/", http.StripPrefix("/html/", http.FileServer(http.Dir("html"))))
 	http.Handle("/picture/", http.StripPrefix("/picture/", http.FileServer(http.Dir("picture"))))
