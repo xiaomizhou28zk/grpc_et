@@ -46,6 +46,7 @@ func (s *Server) GetMessageList(ctx context.Context, req *pb.GetMessageListReque
 func (s *Server) PublishMessage(ctx context.Context, req *pb.PublishMessageRequest) (*pb.PublishMessageResponse, error) {
 	rsp := &pb.PublishMessageResponse{}
 	if len(req.GetMessage()) == 0 {
+		log.Log.Errorf("PublishMessage msg is empty")
 		return rsp, nil
 	}
 

@@ -25,7 +25,6 @@ func GetMessageList(uid string, page, pageSize int32) ([]*MessageInfo, error) {
 	sqlStr += fmt.Sprintf(" order by ctime desc limit %d, %d", (page-1)*pageSize, pageSize)
 
 	msgList := make([]*MessageInfo, 0)
-	fmt.Println("sql:", sqlStr)
 
 	row, err := db.Query(sqlStr)
 	if err != nil {
@@ -68,7 +67,7 @@ func GetMessageCount(uid string) (int32, error) {
 }
 
 func DeleteMessage(id uint64) error {
-	sql := fmt.Sprintf("delete message_tab where id=%d", id)
+	sql := fmt.Sprintf("delete from message_tab where id=%d", id)
 	_, err := db.Exec(sql)
 	if err != nil {
 		return err

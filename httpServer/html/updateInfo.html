@@ -256,26 +256,32 @@
             var file = event.target.files[0];
             // 在这里可以处理选择的文件，例如上传到服务器等
             console.log('已选择文件:', file);
+            var fileSizeInBytes = file.size;
+            var maxSizeInBytes = 1024 * 200; // 200kb
+            if (fileSizeInBytes > maxSizeInBytes) {
+                toastr.error('文件大小超过200KB,请重新选择!');
+                return
+            }
 
             if (file) {
-            var formData = new FormData();
-            formData.append('picture', file);
+                var formData = new FormData();
+                formData.append('picture', file);
 
-            var uploadXHR = new XMLHttpRequest();
-            uploadXHR.open('POST', 'http://101.42.251.239:8080/uploadFile', true);
+                var uploadXHR = new XMLHttpRequest();
+                uploadXHR.open('POST', 'http://101.42.251.239:8080/uploadFile', true);
 
-            uploadXHR.onload = function () {
-                if (uploadXHR.status === 200) {
-                    var response = JSON.parse(uploadXHR.responseText);
-                    if (response.ret === 0) {
-                        editProfilePic.src = response.url;
-                        document.getElementById('edit-profile-pic').src = response.url;
-                    } else {
-                        alert('上传失败，请重试！');
+                uploadXHR.onload = function () {
+                    if (uploadXHR.status === 200) {
+                        var response = JSON.parse(uploadXHR.responseText);
+                        if (response.ret === 0) {
+                            editProfilePic.src = response.url;
+                            document.getElementById('edit-profile-pic').src = response.url;
+                        } else {
+                            toastr.error('上传失败，请重试！');
+                        }
                     }
-                }
-            };
-            uploadXHR.send(formData);
+                };
+                uploadXHR.send(formData);
         }
         });
         // 触发文件选择对话框

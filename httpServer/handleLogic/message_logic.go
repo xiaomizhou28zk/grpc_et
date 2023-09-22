@@ -6,6 +6,7 @@ import (
 	"entryTask/httpServer/common"
 	"entryTask/httpServer/config"
 	"net/http"
+	"fmt"
 )
 
 type MessageInfo struct {
@@ -88,7 +89,7 @@ func GetMessageList(w http.ResponseWriter, r *http.Request) {
 }
 
 type PublishRequest struct {
-	MessageId string `json:"message_id"`
+	Message string `json:"message"`
 }
 type PublishResponse struct {
 	Ret int32  `json:"ret"`
@@ -126,13 +127,14 @@ func PublishMessage(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write(msg)
 	}
 
-	err = publishMessage(u.UID, u.Nick, params.MessageId)
+	err = publishMessage(u.UID, u.Nick, params.Message)
 	if err != nil {
 		log.Log.Errorf("publishMessage err")
 		rsp.Ret = common.ServerErrCode
 		msg, _ := json.Marshal(rsp)
 		_, _ = w.Write(msg)
 	}
+	fmt.Println("adjajdajdasdakdjasdjakdj")
 
 	msg, _ := json.Marshal(rsp)
 	_, _ = w.Write(msg)
