@@ -45,7 +45,7 @@ func main() {
 		log.Log.Errorf("err:%s", err)
 	}
 
-	http.ListenAndServe("0.0.0.0:8080", nil)
+	_ = http.ListenAndServe("0.0.0.0:8080", nil)
 	if err != nil {
 		log.Log.Errorf("err:%s", err)
 	}
