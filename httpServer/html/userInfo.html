@@ -5,23 +5,27 @@
     <title>User Blog</title>
     <link rel="stylesheet" type="text/css" href="https://cdn.bootcss.com/toastr.js/latest/css/toastr.min.css">
     <style>
-        #edit-profile-btn {
-            background-color: #ff5f5f;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            padding: 3px 8px;
-            font-size: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            transition: background-color 0.3s ease;
-            position: relative;
-            left:0px;
+        /* .message-list {
+          border: 1px solid #ccc;
+          padding: 10px;
+        } */
+      
+        .message-item {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 10px;
         }
-    
-        #edit-profile-btn:hover {
-            background-color: #ff3333;
+      
+        .delete-button {
+          background-color: rgb(231, 169, 169);
+          color: white;
+          border: none;
+          padding: 5px 10px;
+          cursor: pointer;
+        }
+        .delete-button:hover {
+            background-color: rgb(235, 102, 102);
         }
     </style>
     <style>
@@ -288,6 +292,7 @@
         <!-- <button id="edit-profile-btn">修改资料</button> -->
     
         <div class="message-list" id="message-list"></div>
+          
 
         <div class="pagination" id="pagination"></div>
 
@@ -389,23 +394,6 @@
                 var messageList = response.list;
                 callback(response)
                 return
-                // var messageListElement = document.getElementById('message-list');
-                
-                // for (var i = 0; i < messageList.length; i++) {
-                //     var messageItem = document.createElement('div');
-                //     messageItem.classList.add('message-item');
-                
-                //     var titleElement = document.createElement('h3');
-                //     titleElement.textContent = '新闻 ' + (i + 1);
-                
-                //     var contentElement = document.createElement('p');
-                //     contentElement.textContent = messageList[i].msg;
-                
-                //     messageItem.appendChild(titleElement);
-                //     messageItem.appendChild(contentElement);
-                
-                //     messageListElement.appendChild(messageItem);
-                // }
             }
         };
     };
@@ -417,57 +405,6 @@
     var editProfileNick = document.getElementById('edit-profile-nick');
     var updateBtn = document.getElementById('update-btn');
    
-    var clickNUm = 0
-
-    // editProfileBtn.addEventListener('click', function () {
-    //     editProfileModal.style.display = 'flex';
-    //     editProfilePic.src = document.getElementById('user-pic').src;
-    //     editProfileNick.value = document.getElementById('user-nick').textContent;
-    // });
-
-    // Upload button click event
-    // editProfilePic.addEventListener('click', function () {
-
-    //     // 创建一个隐藏的文件选择输入
-    //     var fileInput = document.createElement('input');
-    //     fileInput.type = 'file';
-    //     fileInput.style.display = 'none';
-
-    //     // 添加文件选择事件监听器
-    //     fileInput.addEventListener('change', function(event) {
-    //         var file = event.target.files[0];
-    //         // 在这里可以处理选择的文件，例如上传到服务器等
-    //         console.log('已选择文件:', file);
-
-    //         if (file) {
-    //         var formData = new FormData();
-    //         formData.append('picture', file);
-
-    //         var uploadXHR = new XMLHttpRequest();
-    //         uploadXHR.open('POST', 'http://101.42.251.239:8080/uploadFile', true);
-
-    //         uploadXHR.onload = function () {
-    //             if (uploadXHR.status === 200) {
-    //                 var response = JSON.parse(uploadXHR.responseText);
-    //                 if (response.ret === 0) {
-    //                     editProfilePic.src = response.url;
-    //                     document.getElementById('user-pic').src = response.url;
-    //                 } else {
-    //                     alert('上传失败，请重试！');
-    //                 }
-    //             }
-    //         };
-
-    //         uploadXHR.send(formData);
-    //     }
-    //     });
-
-    //     // 触发文件选择对话框
-    //     fileInput.click();
-
-        
-    // });
-
     updateBtn.addEventListener('click', function () {
         var xhr = new XMLHttpRequest();
         // 设置属性
@@ -593,6 +530,10 @@
     }
     renderMessages()
 
+    function deleteMsg() {
+        
+    }
+
     function showMsgList(messageList) {
         var messageListElement = document.getElementById('message-list');
         for (var i = 0; i < messageList.length; i++) {
@@ -604,9 +545,19 @@
         
             var contentElement = document.createElement('p');
             contentElement.textContent = messageList[i].msg;
+
+            // 创建删除按钮元素
+            var deleteButton = document.createElement("button");
+            deleteButton.className = "delete-button";
+            deleteButton.textContent = "Delete";
+            deleteButton.addEventListener("click", function() {
+            // 删除按钮点击事件处理函数
+            messageItem.remove();
+            });
         
             //messageItem.appendChild(titleElement);
             messageItem.appendChild(contentElement);
+            messageItem.appendChild(deleteButton);
         
             messageListElement.appendChild(messageItem);
         }
