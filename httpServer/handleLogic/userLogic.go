@@ -107,11 +107,6 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// UserLogout 用户登出
-func UserLogout(w http.ResponseWriter, r *http.Request) {
-	//fmt.Fprintf(w, "user logout!")
-}
-
 // GetUserInfo 获取用户信息
 func GetUserInfo(w http.ResponseWriter, r *http.Request) {
 	rsp := getUserInfoRsp{Ret: common.SucCode}
@@ -179,6 +174,38 @@ func UpdateUserInfo(w http.ResponseWriter, r *http.Request) {
 	msg, _ := json.Marshal(rsp)
 	_, _ = w.Write(msg)
 
+}
+
+type LogoutRsp struct {
+	Ret int32  `json:"ret"`
+	Url string `json:"url"`
+	Msg string `json:"msg"`
+}
+
+// UserLogout 用户登出
+func UserLogout(w http.ResponseWriter, r *http.Request) {
+	rsp := LogoutRsp{
+		Ret: common.SucCode,
+	}
+	_, status := checkSession(r)
+	if !status {
+		log.Log.Errorf("get session err")
+		rsp.Ret = common.InvalidSession
+		rsp.Url = config.Config.LoginPage
+		msg, _ := json.Marshal(rsp)
+		_, _ = w.Write(msg)
+		return
+	}
+
+	err := deleteSession(r)
+	if err != nil {
+		log.Log.Errorf("deleteSession err")
+		rsp.Ret = common.InvalidSession
+		rsp.Url = config.Config.LoginPage
+		return
+	}
+	msg, _ := json.Marshal(rsp)
+	_, _ = w.Write(msg)
 }
 
 // checkParams 检查参数

@@ -73,3 +73,18 @@ func setSession(sessionID string, r *http.Request, info common.UserInfo) {
 	}
 	setSessionRpc(sessionID, sessionInfo)
 }
+
+func deleteSession(r *http.Request) error {
+	cookie, err := r.Cookie("sessionID")
+	if err != nil {
+		log.Log.Errorf("get cookie err:%s", err)
+		return err
+	}
+	sessionID := cookie.Value
+
+	err = deleteSessionRpc(sessionID)
+	if err != nil {
+		return err
+	}
+	return nil
+}

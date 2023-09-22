@@ -87,12 +87,21 @@ message DeleteMessageResponse {
   optional uint32 ret = 1;
 }
 
+message DeleteSessionRequest {
+  optional string session_id = 1;
+}
+
+message DeleteSessionResponse {
+  optional int32 ret = 1;
+}
+
 service EntryTask {
   rpc GetUserInfo (GetUserInfoRequest) returns (GetUserInfoResponse) {}
   rpc UpdateUserInfo (UpdateUserInfoRequest) returns (UpdateUserInfoResponse) {}
   rpc GetSessionInfo (GetSessionInfoRequest) returns (GetSessionInfoResponse) {}
   rpc RefreshSession (RefreshSessionRequest) returns (RefreshSessionResponse) {}
   rpc SetSessionInfo (SetSessionInfoRequest) returns (SetSessionInfoResponse) {}
+  rpc DeleteSession (DeleteSessionRequest) returns (DeleteSessionResponse) {}
   rpc GetMessageList (GetMessageListRequest) returns (GetMessageListResponse) {}
   rpc PublishMessage (PublishMessageRequest) returns  (PublishMessageResponse) {}
   rpc DeleteMessage (DeleteMessageRequest) returns  (DeleteMessageResponse) {}

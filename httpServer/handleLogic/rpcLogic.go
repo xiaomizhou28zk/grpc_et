@@ -231,3 +231,23 @@ func deleteMessageRpc(uid string, msgId uint64) error {
 	_ = common.MyPool.Put(*conn)
 	return nil
 }
+
+func deleteSessionRpc(sessionId string) error {
+	cli, conn, err := getClient()
+	if err != nil {
+		log.Log.Errorf("get conn err:%s", err)
+		return err
+	}
+	req := &pb.DeleteSessionRequest{SessionId: proto.String(sessionId)}
+
+	resp, err := cli.DeleteSession(context.Background(), req)
+	if err != nil {
+		log.Log.Errorf("DeleteSession err:%s", err)
+		return err
+	}
+	if resp.GetRet() != 0 {
+		return errors.New("DeleteSession error")
+	}
+	_ = common.MyPool.Put(*conn)
+	return nil
+}

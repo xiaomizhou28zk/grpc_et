@@ -63,3 +63,18 @@ func (s *Server) SetSessionInfo(ctx context.Context, req *pb.SetSessionInfoReque
 
 	return rsp, nil
 }
+
+func (s *Server) DeleteSession(ctx context.Context, req *pb.DeleteSessionRequest) (*pb.DeleteSessionResponse, error) {
+	rsp := &pb.DeleteSessionResponse{}
+
+	c := Dao.RedisClient.Get()
+
+	defer c.Close()
+
+	_, err := c.Do("DEL", req.GetSessionId())
+	if err != nil {
+		rsp.Ret = proto.Int32(-1)
+		return rsp, err
+	}
+	return rsp, nil
+}

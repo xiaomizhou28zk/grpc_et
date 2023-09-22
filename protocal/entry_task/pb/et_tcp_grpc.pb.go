@@ -27,6 +27,7 @@ type EntryTaskClient interface {
 	GetSessionInfo(ctx context.Context, in *GetSessionInfoRequest, opts ...grpc.CallOption) (*GetSessionInfoResponse, error)
 	RefreshSession(ctx context.Context, in *RefreshSessionRequest, opts ...grpc.CallOption) (*RefreshSessionResponse, error)
 	SetSessionInfo(ctx context.Context, in *SetSessionInfoRequest, opts ...grpc.CallOption) (*SetSessionInfoResponse, error)
+	DeleteSession(ctx context.Context, in *DeleteSessionRequest, opts ...grpc.CallOption) (*DeleteSessionResponse, error)
 	GetMessageList(ctx context.Context, in *GetMessageListRequest, opts ...grpc.CallOption) (*GetMessageListResponse, error)
 	PublishMessage(ctx context.Context, in *PublishMessageRequest, opts ...grpc.CallOption) (*PublishMessageResponse, error)
 	DeleteMessage(ctx context.Context, in *DeleteMessageRequest, opts ...grpc.CallOption) (*DeleteMessageResponse, error)
@@ -85,6 +86,15 @@ func (c *entryTaskClient) SetSessionInfo(ctx context.Context, in *SetSessionInfo
 	return out, nil
 }
 
+func (c *entryTaskClient) DeleteSession(ctx context.Context, in *DeleteSessionRequest, opts ...grpc.CallOption) (*DeleteSessionResponse, error) {
+	out := new(DeleteSessionResponse)
+	err := c.cc.Invoke(ctx, "/entry_task.EntryTask/DeleteSession", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *entryTaskClient) GetMessageList(ctx context.Context, in *GetMessageListRequest, opts ...grpc.CallOption) (*GetMessageListResponse, error) {
 	out := new(GetMessageListResponse)
 	err := c.cc.Invoke(ctx, "/entry_task.EntryTask/GetMessageList", in, out, opts...)
@@ -121,6 +131,7 @@ type EntryTaskServer interface {
 	GetSessionInfo(context.Context, *GetSessionInfoRequest) (*GetSessionInfoResponse, error)
 	RefreshSession(context.Context, *RefreshSessionRequest) (*RefreshSessionResponse, error)
 	SetSessionInfo(context.Context, *SetSessionInfoRequest) (*SetSessionInfoResponse, error)
+	DeleteSession(context.Context, *DeleteSessionRequest) (*DeleteSessionResponse, error)
 	GetMessageList(context.Context, *GetMessageListRequest) (*GetMessageListResponse, error)
 	PublishMessage(context.Context, *PublishMessageRequest) (*PublishMessageResponse, error)
 	DeleteMessage(context.Context, *DeleteMessageRequest) (*DeleteMessageResponse, error)
@@ -144,6 +155,9 @@ func (UnimplementedEntryTaskServer) RefreshSession(context.Context, *RefreshSess
 }
 func (UnimplementedEntryTaskServer) SetSessionInfo(context.Context, *SetSessionInfoRequest) (*SetSessionInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetSessionInfo not implemented")
+}
+func (UnimplementedEntryTaskServer) DeleteSession(context.Context, *DeleteSessionRequest) (*DeleteSessionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteSession not implemented")
 }
 func (UnimplementedEntryTaskServer) GetMessageList(context.Context, *GetMessageListRequest) (*GetMessageListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMessageList not implemented")
@@ -256,6 +270,24 @@ func _EntryTask_SetSessionInfo_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _EntryTask_DeleteSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteSessionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EntryTaskServer).DeleteSession(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/entry_task.EntryTask/DeleteSession",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EntryTaskServer).DeleteSession(ctx, req.(*DeleteSessionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _EntryTask_GetMessageList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetMessageListRequest)
 	if err := dec(in); err != nil {
@@ -336,6 +368,10 @@ var EntryTask_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SetSessionInfo",
 			Handler:    _EntryTask_SetSessionInfo_Handler,
+		},
+		{
+			MethodName: "DeleteSession",
+			Handler:    _EntryTask_DeleteSession_Handler,
 		},
 		{
 			MethodName: "GetMessageList",
