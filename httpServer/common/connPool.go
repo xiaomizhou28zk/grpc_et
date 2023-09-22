@@ -71,23 +71,23 @@ func (cp *ConnPool) Get() (ConnRes, error) {
 					return nil, errors.New("pool closed")
 				}
 
-				//if time.Now().Sub(connRes.time) > cp.connTimeOut {
-				//	_ = connRes.conn.Close()
-				//	continue
-				//}
+				if time.Now().Sub(connRes.time) > cp.connTimeOut {
+					_ = connRes.conn.Close()
+					continue
+				}
 				return connRes.conn, nil
 			}
-			/*
-				default:
-				{
-					//如果无法从通道中获取资源，则重新创建一个资源返回
-					connRes, err := cp.factory()
-					if err != nil {
-						return nil, err
-					}
-					return connRes, nil
+
+		default:
+			{
+				//如果无法从通道中获取资源，则重新创建一个资源返回
+				connRes, err := cp.factory()
+				if err != nil {
+					return nil, err
 				}
-			*/
+				return connRes, nil
+			}
+
 		}
 	}
 }
@@ -125,11 +125,9 @@ func (cp *ConnPool) Close() {
 	cp.mu.Unlock()
 }
 
-/*
 func (cp *ConnPool) len() int {
 	return len(cp.conns)
 }
-*/
 
 var MyPool *ConnPool
 
@@ -141,5 +139,5 @@ func InitPool() {
 			return nil, err
 		}
 		return conn, nil
-	}, 4, time.Second*time.Duration(config.Config.ConnTimeOut))
+	}, 10, time.Second*time.Duration(config.Config.ConnTimeOut))
 }
