@@ -6,21 +6,18 @@ import (
 	"entryTask/tcpServer/Dao"
 	"golang.org/x/net/context"
 	"google.golang.org/protobuf/proto"
-	"fmt"
 )
 
 // GetUserInfo 获取用户信息
 func (s *Server) GetUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
 
 	rsp := &pb.GetUserInfoResponse{}
-	fmt.Println("GetUserInfo 1", req.GetUid())
 
 	userInfo, err := getUserInfoByUid(req.GetUid())
 	if err != nil {
 		rsp.Ret = proto.Int32(-1)
 		return rsp, nil
 	}
-	fmt.Println("GetUserInfo 2", req.GetUid())
 
 	rsp.Uid = proto.String(userInfo.Uid)
 	rsp.Nick = proto.String(userInfo.Nick)

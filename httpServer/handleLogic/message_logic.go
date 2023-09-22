@@ -6,7 +6,6 @@ import (
 	"entryTask/httpServer/common"
 	"entryTask/httpServer/config"
 	"net/http"
-	"fmt"
 )
 
 type MessageInfo struct {
@@ -134,7 +133,6 @@ func PublishMessage(w http.ResponseWriter, r *http.Request) {
 		msg, _ := json.Marshal(rsp)
 		_, _ = w.Write(msg)
 	}
-	fmt.Println("adjajdajdasdakdjasdjakdj")
 
 	msg, _ := json.Marshal(rsp)
 	_, _ = w.Write(msg)
