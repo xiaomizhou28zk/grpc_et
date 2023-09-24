@@ -225,6 +225,29 @@
         }
             /*分页*/
     </style>
+    <style>
+        /* 消息脚 */
+        .message-footer {
+            display: flex;
+            justify-content: flex-end;
+        }
+        /* 消息删除按钮所在div */
+        .message-btn-elem {
+            display: flex;
+            justify-content: flex-end;
+        }
+        /*作者和发布时间的字体*/
+        .message-author,
+        .message-time{
+        font-family: "Brush Script MT", cursive;
+        color: rgb(50, 60, 46);
+        }
+        .message-content,
+        .message-title {
+        font-family: "Brush Script MT", cursive;
+        color: rgb(8, 8, 8);
+        }
+    </style>
 </head>
 <body>
     <div class="navbar">
@@ -237,25 +260,35 @@
             <li><a href="#" id="logout-btn">退出登录</a></li>
         </ul>
     </div>
+    
     <div class="container">
         <div class="user-info">
             <img id="user-pic" src="" alt="User Picture">
             <h2 id="user-nick"></h2>
             <p id="user-id"></p>
         </div>
-        <!-- <button id="edit-profile-btn">修改资料</button> -->
     
-        <div class="message-list" id="message-list"></div>
-          
-
+        <div class="message-list">
+            <div class="message">
+                <div class="message-header">
+                    <h3 class="message-title"></h3>
+                </div>
+                <div class="message-content">
+                </div>
+                <div class="message-footer">
+                    <p class="message-author"></p>
+                    <p class="message-time"></p>
+                </div>
+            </div>
+        </div>
+    
         <div class="pagination" id="pagination"></div>
-
-    
         <div class="message-input">
             <input type="text" id="message-text" placeholder="输入...">
             <button id="send-btn">发布</button>
         </div>
     </div>
+
 
 <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
 <script src="https://cdn.bootcss.com/toastr.js/latest/js/toastr.min.js"></script>
@@ -383,16 +416,15 @@
 
     function refreshMessageList(curPage) {
         // 移除所有子元素
-        var messageListTemp = document.getElementById("message-list");
-        while (messageListTemp.firstChild) {
-            messageListTemp.removeChild(messageListTemp.firstChild);
-        }
+        var messageList = document.querySelector(".message-list");
+        messageList.innerHTML = "";
         getMsgListFunc(curPage, function(response) {
             // 在回调函数中处理返回值
             var rsp = response;
-            var messageList = document.getElementById("message-list");
+            //var messageList = document.getElementById("message-list");
+            var messageList = document.querySelector(".message-list");
             messageList.innerHTML = "";
-            showMsgList(rsp.list)
+            showMsgList2(rsp.list)
             renderPagination(rsp.count);
         });
     }
@@ -414,19 +446,17 @@
 
     // 渲染当前页的消息列表
     function renderMessages() {
-        // var startIndex = (currentPage - 1) * pageSize;
-        // var endIndex = startIndex + pageSize;
-        // var messagesToRender = messages.slice(startIndex, endIndex);
-
         if (currentPage < 1) {
             return
         }
         getMsgListFunc(currentPage, function(response) {
             // 在回调函数中处理返回值
             var rsp = response;
-            var messageList = document.getElementById("message-list");
+            //var messageList = document.getElementById("message-list");
+            var messageList = document.querySelector(".message-list");
+            // 移除所有子元素
             messageList.innerHTML = "";
-            showMsgList(rsp.list)
+            showMsgList2(rsp.list)
             renderPagination(rsp.count);
         });
 
@@ -435,45 +465,78 @@
     renderMessages()
 
     //渲染展示当前页信息列表
-    function showMsgList(messageList) {
-        var messageListElement = document.getElementById('message-list');
-        for (var i = 0; i < messageList.length; i++) {
-            var messageItem = document.createElement('div');
-            messageItem.classList.add('message-item');
-        
-            //var titleElement = document.createElement('h5');
-            //titleElement.textContent = '发布日期: ' + (i + 1);
+    function showMsgList2(messages) {
+        var messageList = document.querySelector('.message-list');
+        messages.forEach(function(message) {
+            // 创建消息元素
+            var messageElement = document.createElement('div');
+            messageElement.classList.add('message');
 
-            // var timeElement = document.createElement('h6');
-            // timeElement.textContent = '发布日期: ' + messageList.c_time;
+            // 创建消息头部元素
+            var headerElement = document.createElement('div');
+            headerElement.classList.add('message-header');
+
+            // 创建消息标题元素
+            var titleElement = document.createElement('h4');
+            titleElement.classList.add('message-title');
+            //titleElement.textContent = message.title;
+            titleElement.textContent = "消息-"+message.id;
+
+            // 将标题和时间元素添加到消息头部元素中
+            headerElement.appendChild(titleElement);
+
+            // 创建消息内容元素
+            var contentElement = document.createElement('div');
+            contentElement.classList.add('message-content');
+            contentElement.textContent = message.msg;
+
+            // 创建消息底部元素
+            var footerElement = document.createElement('div');
+            footerElement.classList.add('message-footer');
+
+            // 创建消息作者元素
+            var authorElement = document.createElement('p');
+            authorElement.classList.add('message-author');
+            authorElement.textContent = "发布人: "+message.owner;
 
 
-            var contentElement = document.createElement('p');
-            contentElement.textContent = messageList[i].msg;
-
+            // 创建消息底部元素
+            var btnElement = document.createElement('div');
+            btnElement.classList.add('message-btn-elem');
             // 创建删除按钮元素
             var deleteButton = document.createElement("button");
-            deleteButton.className = "delete-button";
-            deleteButton.textContent = "Delete";
-            // 创建闭包来捕获 messageList[i] 的值
-            (function(id) {
-                deleteButton.addEventListener("click", function() {
-                    deleteMsg(id);
-                    messageItem.remove();
-                });
-            })(messageList[i].id);
-        
-            //messageItem.appendChild(titleElement);
-            messageItem.appendChild(contentElement);
-            messageItem.appendChild(deleteButton);
+                deleteButton.className = "delete-button";
+                deleteButton.textContent = "Delete";
+                // 创建闭包来捕获 messageList[i] 的值
+                (function(id) {
+                    deleteButton.addEventListener("click", function() {
+                        deleteMsg(id);
+                        //messageItem.remove();
+                    });
+                })(message.id);
+            btnElement.appendChild(deleteButton)
 
 
-            // 将 timeElement 插入到 deleteButton 后面
-            messageItem.insertBefore(timeElement, deleteButton.nextSibling);
+            // 创建消息时间元素
+            var timeElement = document.createElement('p');
+            timeElement.classList.add('message-time');
+            timeElement.textContent = "发布时间: "+message.c_time;
 
-            messageListElement.appendChild(messageItem);
-        }
+            // 将作者元素添加到消息底部元素中
+            footerElement.appendChild(authorElement);
+            footerElement.appendChild(timeElement);
+
+            // 将头部、内容和底部元素添加到消息元素中
+            messageElement.appendChild(headerElement);
+            messageElement.appendChild(contentElement);
+            messageElement.appendChild(footerElement);
+            messageElement.appendChild(btnElement)
+
+            // 将消息元素添加到消息列表容器中
+            messageList.appendChild(messageElement);
+        });
     }
+
 
     //删除信息
     function deleteMsg(msg_id) {
@@ -551,8 +614,8 @@
 
     // 监听发布按钮的点击事件
     document.getElementById("send-btn").addEventListener("click", function() {
-        var messageText = document.getElementById("message-text").value;
-        addMessage(messageText);
+        // var messageText = document.getElementById("message-text").value;
+        // addMessage(messageText);
         document.getElementById("message-text").value = "";
     });
 

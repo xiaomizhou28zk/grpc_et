@@ -8,7 +8,7 @@ var UserCache *lru.Cache
 
 func InitCache() error {
 	var err error
-	UserCache, err = lru.New(2000000)
+	UserCache, err = lru.New(200)
 	if err != nil {
 		return err
 	}
