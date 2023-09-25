@@ -248,6 +248,60 @@
         color: rgb(8, 8, 8);
         }
     </style>
+    <style>
+        /* 评论区 */
+        .comment-container {
+        margin-top: 5px;
+        }
+
+        .comment-form {
+        display: flex;
+        align-items: center;
+        }
+
+        .comment-input {
+        flex-grow: 1;
+        padding: 6px;
+        border: 1px solid #ccc;
+        border-radius: 2px;
+        font-size: 12px;
+        font-family: "Brush Script MT", cursive;
+        transition: border-color 0.3s ease;
+        }
+
+        .comment-input:focus {
+        outline: none;
+        border-color: #007bff;
+        }
+
+        .comment-submit {
+        margin-left: 6px;
+        padding: 6px 12px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 2px;
+        font-size: 12px;
+        font-family: "Brush Script MT", cursive;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        }
+
+        .comment-submit:hover {
+        background-color: #0056b3;
+        }
+
+        .comment {
+        margin-top: 5px;
+        padding: 8px;
+        background-color: #f5f5f5;
+        border: 1px solid #ccc;
+        border-radius: 2px;
+        font-size: 10px;
+        font-family: "Brush Script MT", cursive;
+        line-height: 1.2;
+        }
+    </style>
 </head>
 <body>
     <div class="navbar">
@@ -367,12 +421,6 @@
             }
         };
     }
-
-    // Edit profile button click event
-    //var editProfileBtn = document.getElementById('edit-profile-btn');
-    var editProfileModal = document.getElementById('edit-profile-modal');
-    var editProfilePic = document.getElementById('edit-profile-pic');
-    var editProfileNick = document.getElementById('edit-profile-nick');
 
     var sendBtn = document.getElementById('send-btn');
     sendBtn.addEventListener('click', function () {
@@ -520,7 +568,7 @@
             // 创建消息时间元素
             var timeElement = document.createElement('p');
             timeElement.classList.add('message-time');
-            timeElement.textContent = "发布时间: "+message.c_time;
+            timeElement.textContent = "|发布时间: "+message.c_time;
 
             // 将作者元素添加到消息底部元素中
             footerElement.appendChild(authorElement);
@@ -531,6 +579,56 @@
             messageElement.appendChild(contentElement);
             messageElement.appendChild(footerElement);
             messageElement.appendChild(btnElement)
+
+            // 将消息元素添加到消息列表容器中
+            messageList.appendChild(messageElement);
+
+
+            //评论区
+            // 创建评论区容器
+            var commentContainer = document.createElement('div');
+            commentContainer.classList.add('comment-container');
+
+            // 创建评论表单
+            var commentForm = document.createElement('form');
+            commentForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // 阻止表单默认提交行为
+
+                // 获取评论内容
+                var commentInput = commentForm.querySelector('.comment-input');
+                var commentText = commentInput.value;
+
+                // 创建新的评论元素
+                var commentElement = document.createElement('div');
+                commentElement.classList.add('comment');
+                commentElement.textContent = commentText;
+
+                // 将新的评论元素添加到评论区容器中
+                commentContainer.appendChild(commentElement);
+
+                // 清空评论输入框
+                commentInput.value = '';
+            });
+
+            // 创建评论输入框
+            var commentInput = document.createElement('input');
+            commentInput.classList.add('comment-input');
+            commentInput.setAttribute('type', 'text');
+            commentInput.setAttribute('placeholder', '输入评论...');
+            commentForm.appendChild(commentInput);
+
+            // 创建提交按钮
+            var submitButton = document.createElement('button');
+            submitButton.setAttribute('type', 'submit');
+            submitButton.classList.add('comment-submit');
+            submitButton.textContent = '提交';
+            commentForm.appendChild(submitButton);
+
+            // 将评论表单添加到评论区容器中
+            commentContainer.appendChild(commentForm);
+
+            // 将评论区容器添加到消息元素中
+            messageElement.appendChild(commentContainer);
 
             // 将消息元素添加到消息列表容器中
             messageList.appendChild(messageElement);
