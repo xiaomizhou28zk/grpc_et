@@ -81,7 +81,7 @@ func GetCommentListByMessageIds(msgIds []uint64, page, pageSize int32) ([]*Comme
 
 func AddComment(uid, comment string) error {
 	t := time.Now().Unix()
-	sql := fmt.Sprintf("insert into comment_tab(`message`,`uid`,`ctime`, `is_visible`,`message_id`) values('%s','%s',%d, %d,'%s')",
+	sql := fmt.Sprintf("insert into comment_tab(`comment`,`uid`,`ctime`, `is_visible`,`message_id`) values('%s','%s',%d, %d,'%s')",
 		comment, uid, t, 1)
 	_, err := db.Exec(sql)
 	if err != nil {
