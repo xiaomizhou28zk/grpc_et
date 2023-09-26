@@ -7,7 +7,6 @@ import (
 	"entryTask/httpServer/common"
 	"entryTask/httpServer/config"
 	"net/http"
-	"fmt"
 )
 
 type MessageInfo struct {
@@ -29,12 +28,13 @@ type Reply struct {
 	ToUserName string `json:"to_user_name"`
 	Reply      string `json:"reply"`
 	CommentId  uint64 `json:"comment_id"`
+	Ctime      string `json:"ctime"`
 }
 
 type Comment struct {
 	ID        uint64   `json:"id"`
 	Comment   string   `json:"comment"`
-	CTime     string   `json:"CTime"`
+	CTime     string   `json:"cTime"`
 	MessageId uint64   `json:"message_id"`
 	ReplyList []*Reply `json:"reply_list"`
 	Uid       string   `json:"uid"`
@@ -72,7 +72,6 @@ func GetMessageList(w http.ResponseWriter, r *http.Request) {
 	// 解析 JSON 参数
 	var req getMsgListRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		fmt.Println("-------e-------")
 		rsp.Ret = common.MissingParams
 		msg, _ := json.Marshal(rsp)
 		_, _ = w.Write(msg)
@@ -92,16 +91,13 @@ func GetMessageList(w http.ResponseWriter, r *http.Request) {
 		uid = ""
 	}
 
-	fmt.Println("getMessageListRpc +++++1")
 	msgList, count, err := getMessageListRpc(uid, req.Page, req.PageSize)
 	if err != nil {
-		fmt.Println("getMessageListRpc err")
 		log.Log.Errorf("getMessageListRpc err")
 		rsp.Ret = common.ServerErrCode
 		msg, _ := json.Marshal(rsp)
 		_, _ = w.Write(msg)
 	}
-	fmt.Println("getMessageListRpc +++++2")
 
 	messageIds := make([]uint64, 0)
 	for _, elem := range msgList {
@@ -142,16 +138,12 @@ func getCommentAndReply(messageIds []uint64) map[uint64][]*Comment {
 	for _, elem := range commentRsp.List {
 		commentIds = append(commentIds, elem.CommentId)
 	}
-	fmt.Println("comment list", commentIds)
 	reply, err := getReplyByCommentIdsRpc(commentIds)
 	if err != nil {
-		fmt.Println("comment err:",err)
 		return nil
 	}
-	fmt.Println("comment=---------- list", len(reply.GetList()))
 	commentReplyMap := make(map[uint64][]*Reply)
 	for _, elem := range reply.GetList() {
-		fmt.Println("reply:", elem.GetReply())
 		commentReplyMap[elem.CommentId] = append(commentReplyMap[elem.CommentId], &Reply{
 			ID:         elem.ReplyId,
 			Reply:      elem.Reply,
@@ -160,6 +152,7 @@ func getCommentAndReply(messageIds []uint64) map[uint64][]*Comment {
 			UserName:   elem.GetUserName(),
 			ToUid:      elem.GetToUid(),
 			ToUserName: elem.GetToUserName(),
+			Ctime:      common.GetTimeFromTimestamp(elem.GetCtime()),
 		})
 	}
 	ret := make(map[uint64][]*Comment)
