@@ -22,7 +22,9 @@ func GetMessageList(uid string, page, pageSize int32) ([]*MessageInfo, error) {
 	if len(uid) != 0 {
 		sqlStr += fmt.Sprintf(" where uid='%s'", uid)
 	}
-	sqlStr += fmt.Sprintf(" order by ctime desc limit %d, %d", (page-1)*pageSize, pageSize)
+	if page > 0 && pageSize > 0 {
+		sqlStr += fmt.Sprintf(" order by ctime desc limit %d, %d", (page-1)*pageSize, pageSize)
+	}
 
 	msgList := make([]*MessageInfo, 0)
 
@@ -56,7 +58,11 @@ func AddMessage(uid, msg, userName string) error {
 }
 
 func GetMessageCount(uid string) (int32, error) {
-	sql := fmt.Sprintf("select count(*) from message_tab where uid='%s'", uid)
+	sql := fmt.Sprintf("select count(*) from message_tab")
+
+	if uid != "" {
+		sql += fmt.Sprintf(" where uid='%s'", uid)
+	}
 	var count int32
 	err := db.QueryRow(sql).Scan(&count)
 	if err != nil {

@@ -10,13 +10,28 @@ import (
 )
 
 type MessageInfo struct {
-	UID   string `json:"uid"` //用户ID
-	Msg   string `json:"msg"`
-	Image string `json:"image"`
-	ID    uint64 `json:"id"`
-	Owner string `json:"owner"`
-	CTime string `json:"c_time"`
-	MTime string `json:"m_time"`
+	UID         string     `json:"uid"` //用户ID
+	Msg         string     `json:"msg"`
+	Image       string     `json:"image"`
+	ID          uint64     `json:"id"`
+	Owner       string     `json:"owner"`
+	CTime       string     `json:"c_time"`
+	MTime       string     `json:"m_time"`
+	CommentList []*Comment `json:"comment_list"`
+}
+
+type Reply struct {
+	ID        uint64 `json:"id"`
+	Reply     string `json:"reply"`
+	CommentId uint64 `json:"comment_id"`
+}
+
+type Comment struct {
+	ID        uint64   `json:"id"`
+	Comment   string   `json:"comment"`
+	CTime     string   `json:"CTime"`
+	MessageId uint64   `json:"message_id"`
+	ReplyList []*Reply `json:"reply_list"`
 }
 
 type getMsgListRsp struct {
@@ -28,8 +43,9 @@ type getMsgListRsp struct {
 }
 
 type getMsgListRequest struct {
-	Page     int32 `json:"page"`
-	PageSize int32 `json:"pageSize"`
+	Page       int32 `json:"page"`
+	PageSize   int32 `json:"pageSize"`
+	AllMessage bool  `json:"allMessage"`
 }
 
 func GetMessageList(w http.ResponseWriter, r *http.Request) {
@@ -63,13 +79,24 @@ func GetMessageList(w http.ResponseWriter, r *http.Request) {
 	rsp.Page = req.Page
 	rsp.PageSize = req.PageSize
 
-	msgList, count, err := getMessageListRpc(sessionInfo.UID, req.Page, req.PageSize)
+	uid := sessionInfo.UID
+	if req.AllMessage {
+		uid = ""
+	}
+
+	msgList, count, err := getMessageListRpc(uid, req.Page, req.PageSize)
 	if err != nil {
 		log.Log.Errorf("getMessageListRpc err")
 		rsp.Ret = common.ServerErrCode
 		msg, _ := json.Marshal(rsp)
 		_, _ = w.Write(msg)
 	}
+
+	messageIds := make([]uint64, 0)
+	for _, elem := range msgList {
+		messageIds = append(messageIds, elem.GetId())
+	}
+	msg2CommentMap := getCommentAndReply(messageIds)
 
 	for _, elem := range msgList {
 		// Base64 解码
@@ -79,19 +106,54 @@ func GetMessageList(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		rsp.List = append(rsp.List, &MessageInfo{
-			UID:   elem.GetUid(),
-			ID:    elem.GetId(),
-			Msg:   string(decoded),
-			Image: elem.GetImage(),
-			Owner: elem.GetOwner(),
-			CTime: common.GetTimeFromTimestamp(elem.GetCtime()),
-			MTime: common.GetTimeFromTimestamp(elem.GetMtime()),
+			UID:         elem.GetUid(),
+			ID:          elem.GetId(),
+			Msg:         string(decoded),
+			Image:       elem.GetImage(),
+			Owner:       elem.GetOwner(),
+			CTime:       common.GetTimeFromTimestamp(elem.GetCtime()),
+			MTime:       common.GetTimeFromTimestamp(elem.GetMtime()),
+			CommentList: msg2CommentMap[elem.GetId()],
 		})
 	}
 	rsp.Count = count
 
 	msg, _ := json.Marshal(rsp)
 	_, _ = w.Write(msg)
+}
+
+func getCommentAndReply(messageIds []uint64) map[uint64][]*Comment {
+	commentRsp, err := getCommentsByMessageIdsRpc(messageIds)
+	if err != nil {
+		return nil
+	}
+	commentIds := make([]uint64, 0)
+	for _, elem := range commentRsp.List {
+		commentIds = append(commentIds, elem.CommentId)
+	}
+	reply, err := getReplyByCommentIdsRpc(commentIds)
+	if err != nil {
+		return nil
+	}
+	commentReplyMap := make(map[uint64][]*Reply)
+	for _, elem := range reply.List {
+		commentReplyMap[elem.CommentId] = append(commentReplyMap[elem.CommentId], &Reply{
+			ID:        elem.ReplyId,
+			Reply:     elem.Reply,
+			CommentId: elem.CommentId,
+		})
+	}
+	ret := make(map[uint64][]*Comment)
+	for _, elem := range commentRsp.List {
+		ret[elem.MessageId] = append(ret[elem.MessageId], &Comment{
+			ID:      elem.CommentId,
+			Comment: elem.Comment,
+			//CTime:     elem.Ctime,
+			MessageId: elem.MessageId,
+			ReplyList: commentReplyMap[elem.CommentId],
+		})
+	}
+	return ret
 }
 
 type PublishRequest struct {

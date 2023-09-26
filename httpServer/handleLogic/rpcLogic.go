@@ -250,3 +250,45 @@ func deleteSessionRpc(sessionId string) error {
 	_ = common.MyPool.Put(*conn)
 	return nil
 }
+
+func getCommentsByMessageIdsRpc(messageIds []uint64) (*pb.GetCommentsByMessageIdsResponse, error) {
+	cli, conn, err := getClient()
+	if err != nil {
+		log.Log.Errorf("get conn err:%s", err)
+		return nil, err
+	}
+
+	req := &pb.GetCommentsByMessageIdsRequest{MessageIds: messageIds}
+
+	resp, err := cli.GetCommentsByMessageIds(context.Background(), req)
+	if err != nil {
+		log.Log.Errorf("GetCommentsByMessageIds err:%s", err)
+		return nil, err
+	}
+	if resp.GetRet() != 0 {
+		return nil, errors.New("GetCommentsByMessageIds error")
+	}
+	_ = common.MyPool.Put(*conn)
+	return resp, nil
+}
+
+func getReplyByCommentIdsRpc(commentIds []uint64) (*pb.GetReplyByCommentIdsResponse, error) {
+	cli, conn, err := getClient()
+	if err != nil {
+		log.Log.Errorf("get conn err:%s", err)
+		return nil, err
+	}
+
+	req := &pb.GetReplyByCommentIdsRequest{CommentIds: commentIds}
+
+	resp, err := cli.GetReplyByCommentIds(context.Background(), req)
+	if err != nil {
+		log.Log.Errorf("GetReplyByCommentIds err:%s", err)
+		return nil, err
+	}
+	if resp.GetRet() != 0 {
+		return nil, errors.New("GetReplyByCommentIds error")
+	}
+	_ = common.MyPool.Put(*conn)
+	return resp, nil
+}

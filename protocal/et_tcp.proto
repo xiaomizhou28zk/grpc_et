@@ -95,6 +95,38 @@ message DeleteSessionResponse {
   optional int32 ret = 1;
 }
 
+message  GetCommentsByMessageIdsRequest {
+  repeated uint64 message_ids = 1;
+}
+
+message MessageCommentsItem {
+  uint64 message_id = 1;
+  string comment = 2;
+  uint64 comment_id = 3;
+  uint64 ctime = 4;
+}
+
+message GetCommentsByMessageIdsResponse {
+  optional int32 ret = 1;
+  repeated MessageCommentsItem list = 2;
+}
+
+message GetReplyByCommentIdsRequest {
+  repeated uint64 comment_ids = 1;
+}
+
+message CommentReplyItem {
+  uint64 comment_id = 1;
+  string reply = 2;
+  uint64 reply_id = 3;
+  uint64  ctime = 4;
+}
+
+message GetReplyByCommentIdsResponse {
+  optional int32 ret = 1;
+  repeated CommentReplyItem list = 2;
+}
+
 service EntryTask {
   rpc GetUserInfo (GetUserInfoRequest) returns (GetUserInfoResponse) {}
   rpc UpdateUserInfo (UpdateUserInfoRequest) returns (UpdateUserInfoResponse) {}
@@ -105,4 +137,7 @@ service EntryTask {
   rpc GetMessageList (GetMessageListRequest) returns (GetMessageListResponse) {}
   rpc PublishMessage (PublishMessageRequest) returns  (PublishMessageResponse) {}
   rpc DeleteMessage (DeleteMessageRequest) returns  (DeleteMessageResponse) {}
+
+  rpc GetCommentsByMessageIds(GetCommentsByMessageIdsRequest) returns(GetCommentsByMessageIdsResponse) {}
+  rpc GetReplyByCommentIds(GetReplyByCommentIdsRequest) returns(GetReplyByCommentIdsResponse) {}
 }
