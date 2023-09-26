@@ -48,7 +48,7 @@ func GetReplyListByUid(uid string, page, pageSize int32) ([]*ReplyInfo, error) {
 }
 
 func GetReplyListByCommentIds(commentIds []uint64, page, pageSize int32) ([]*ReplyInfo, error) {
-	sqlStr := "select id,comment_id,reply,uid,ctime,is_visible from reply_tab"
+	sqlStr := "select id,comment_id,reply,uid,ctime,is_visible,to_uid from reply_tab"
 	if len(commentIds) > 0 {
 		commentIdStr := make([]string, 0)
 		for _, elem := range commentIds {
@@ -59,6 +59,7 @@ func GetReplyListByCommentIds(commentIds []uint64, page, pageSize int32) ([]*Rep
 	if page > 0 && pageSize > 0 {
 		sqlStr += fmt.Sprintf(" order by ctime desc limit %d, %d", (page-1)*pageSize, pageSize)
 	}
+	fmt.Println("GetReplyListByCommentIds:", sqlStr)
 
 	list := make([]*ReplyInfo, 0)
 

@@ -7,6 +7,7 @@ import (
 	"entryTask/httpServer/common"
 	"entryTask/httpServer/config"
 	"net/http"
+	"fmt"
 )
 
 type MessageInfo struct {
@@ -51,7 +52,7 @@ type getMsgListRsp struct {
 type getMsgListRequest struct {
 	Page       int32 `json:"page"`
 	PageSize   int32 `json:"pageSize"`
-	AllMessage bool  `json:"allMessage"`
+	AllMessage bool  `json:"all_message"`
 }
 
 func GetMessageList(w http.ResponseWriter, r *http.Request) {
@@ -71,6 +72,7 @@ func GetMessageList(w http.ResponseWriter, r *http.Request) {
 	// 解析 JSON 参数
 	var req getMsgListRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		fmt.Println("-------e-------")
 		rsp.Ret = common.MissingParams
 		msg, _ := json.Marshal(rsp)
 		_, _ = w.Write(msg)
@@ -90,13 +92,16 @@ func GetMessageList(w http.ResponseWriter, r *http.Request) {
 		uid = ""
 	}
 
+	fmt.Println("getMessageListRpc +++++1")
 	msgList, count, err := getMessageListRpc(uid, req.Page, req.PageSize)
 	if err != nil {
+		fmt.Println("getMessageListRpc err")
 		log.Log.Errorf("getMessageListRpc err")
 		rsp.Ret = common.ServerErrCode
 		msg, _ := json.Marshal(rsp)
 		_, _ = w.Write(msg)
 	}
+	fmt.Println("getMessageListRpc +++++2")
 
 	messageIds := make([]uint64, 0)
 	for _, elem := range msgList {
@@ -137,12 +142,16 @@ func getCommentAndReply(messageIds []uint64) map[uint64][]*Comment {
 	for _, elem := range commentRsp.List {
 		commentIds = append(commentIds, elem.CommentId)
 	}
+	fmt.Println("comment list", commentIds)
 	reply, err := getReplyByCommentIdsRpc(commentIds)
 	if err != nil {
+		fmt.Println("comment err:",err)
 		return nil
 	}
+	fmt.Println("comment=---------- list", len(reply.GetList()))
 	commentReplyMap := make(map[uint64][]*Reply)
-	for _, elem := range reply.List {
+	for _, elem := range reply.GetList() {
+		fmt.Println("reply:", elem.GetReply())
 		commentReplyMap[elem.CommentId] = append(commentReplyMap[elem.CommentId], &Reply{
 			ID:         elem.ReplyId,
 			Reply:      elem.Reply,

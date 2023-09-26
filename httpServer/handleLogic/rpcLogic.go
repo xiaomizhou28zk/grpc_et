@@ -286,6 +286,7 @@ func getReplyByCommentIdsRpc(commentIds []uint64) (*pb.GetReplyByCommentIdsRespo
 		log.Log.Errorf("GetReplyByCommentIds err:%s", err)
 		return nil, err
 	}
+	fmt.Println("GetReplyByCommentIds rpc:", len(resp.GetList()), resp.GetRet())
 	if resp.GetRet() != 0 {
 		return nil, errors.New("GetReplyByCommentIds error")
 	}
