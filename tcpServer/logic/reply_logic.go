@@ -16,11 +16,25 @@ func (s *Server) GetReplyByCommentIds(ctx context.Context, req *pb.GetReplyByCom
 		return rsp, err
 	}
 	for _, elem := range list {
+		userInfo, err := getUserInfoByUid(elem.Uid)
+		if err != nil {
+			log.Log.Errorf("GetReplyByCommentIds getUserInfoByUid err:%s", err)
+			continue
+		}
+		toUserInfo, err := getUserInfoByUid(elem.ToUid)
+		if err != nil {
+			log.Log.Errorf("GetReplyByCommentIds getUserInfoByUid err:%s", err)
+			continue
+		}
 		rsp.List = append(rsp.List, &pb.CommentReplyItem{
-			CommentId: elem.CommentId,
-			Reply:     elem.Reply,
-			ReplyId:   elem.ID,
-			Ctime:     elem.Ctime,
+			CommentId:  elem.CommentId,
+			Reply:      elem.Reply,
+			ReplyId:    elem.ID,
+			Ctime:      elem.Ctime,
+			Uid:        elem.Uid,
+			ToUid:      elem.ToUid,
+			UserName:   userInfo.Nick,
+			ToUserName: toUserInfo.Nick,
 		})
 	}
 	return rsp, nil

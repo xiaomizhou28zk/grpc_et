@@ -21,9 +21,13 @@ type MessageInfo struct {
 }
 
 type Reply struct {
-	ID        uint64 `json:"id"`
-	Reply     string `json:"reply"`
-	CommentId uint64 `json:"comment_id"`
+	ID         uint64 `json:"id"`
+	Uid        string `json:"uid"`
+	UserName   string `json:"user_name"`
+	ToUid      string `json:"to_uid"`
+	ToUserName string `json:"to_user_name"`
+	Reply      string `json:"reply"`
+	CommentId  uint64 `json:"comment_id"`
 }
 
 type Comment struct {
@@ -32,6 +36,8 @@ type Comment struct {
 	CTime     string   `json:"CTime"`
 	MessageId uint64   `json:"message_id"`
 	ReplyList []*Reply `json:"reply_list"`
+	Uid       string   `json:"uid"`
+	UserName  string   `json:"user_name"`
 }
 
 type getMsgListRsp struct {
@@ -138,19 +144,25 @@ func getCommentAndReply(messageIds []uint64) map[uint64][]*Comment {
 	commentReplyMap := make(map[uint64][]*Reply)
 	for _, elem := range reply.List {
 		commentReplyMap[elem.CommentId] = append(commentReplyMap[elem.CommentId], &Reply{
-			ID:        elem.ReplyId,
-			Reply:     elem.Reply,
-			CommentId: elem.CommentId,
+			ID:         elem.ReplyId,
+			Reply:      elem.Reply,
+			CommentId:  elem.CommentId,
+			Uid:        elem.GetUid(),
+			UserName:   elem.GetUserName(),
+			ToUid:      elem.GetToUid(),
+			ToUserName: elem.GetToUserName(),
 		})
 	}
 	ret := make(map[uint64][]*Comment)
 	for _, elem := range commentRsp.List {
 		ret[elem.MessageId] = append(ret[elem.MessageId], &Comment{
-			ID:      elem.CommentId,
-			Comment: elem.Comment,
-			//CTime:     elem.Ctime,
+			ID:        elem.CommentId,
+			Comment:   elem.Comment,
+			CTime:     common.GetTimeFromTimestamp(elem.GetCtime()),
 			MessageId: elem.MessageId,
 			ReplyList: commentReplyMap[elem.CommentId],
+			Uid:       elem.GetUid(),
+			UserName:  elem.GetUserName(),
 		})
 	}
 	return ret

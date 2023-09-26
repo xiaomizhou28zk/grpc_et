@@ -104,6 +104,8 @@ message MessageCommentsItem {
   string comment = 2;
   uint64 comment_id = 3;
   uint64 ctime = 4;
+  string uid = 5;
+  string user_name = 6;
 }
 
 message GetCommentsByMessageIdsResponse {
@@ -120,6 +122,10 @@ message CommentReplyItem {
   string reply = 2;
   uint64 reply_id = 3;
   uint64  ctime = 4;
+  string uid = 5;
+  string user_name = 6;
+  string to_uid = 7;
+  string to_user_name = 8;
 }
 
 message GetReplyByCommentIdsResponse {

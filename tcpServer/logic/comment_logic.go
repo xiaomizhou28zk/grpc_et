@@ -16,11 +16,18 @@ func (s *Server) GetCommentsByMessageIds(ctx context.Context, req *pb.GetComment
 		return rsp, err
 	}
 	for _, elem := range list {
+		userInfo, err := getUserInfoByUid(elem.Uid)
+		if err != nil {
+			log.Log.Errorf("GetReplyByCommentIds getUserInfoByUid err:%s", err)
+			continue
+		}
 		rsp.List = append(rsp.List, &pb.MessageCommentsItem{
 			MessageId: elem.MessageId,
 			Comment:   elem.Comment,
 			CommentId: elem.ID,
 			Ctime:     elem.Ctime,
+			Uid:       elem.Uid,
+			UserName:  userInfo.Nick,
 		})
 	}
 	return rsp, nil

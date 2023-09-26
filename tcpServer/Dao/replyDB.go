@@ -15,10 +15,11 @@ type ReplyInfo struct {
 	Uid       string `xorm:"uid"`
 	Ctime     uint64 `xorm:"ctime"`
 	IsVisible int    `xorm:"is_visible"`
+	ToUid     string `xorm:"to_uid"`
 }
 
 func GetReplyListByUid(uid string, page, pageSize int32) ([]*ReplyInfo, error) {
-	sqlStr := "select id,comment_id,reply,uid,ctime,is_visible from reply_tab"
+	sqlStr := "select id,comment_id,reply,uid,ctime,is_visible,to_uid from reply_tab"
 	if len(uid) != 0 {
 		sqlStr += fmt.Sprintf(" where uid='%s'", uid)
 	}
@@ -68,7 +69,7 @@ func GetReplyListByCommentIds(commentIds []uint64, page, pageSize int32) ([]*Rep
 	}
 	for row.Next() {
 		m := &ReplyInfo{}
-		err = row.Scan(&m.ID, &m.CommentId, &m.Reply, &m.Uid, &m.Ctime, &m.IsVisible)
+		err = row.Scan(&m.ID, &m.CommentId, &m.Reply, &m.Uid, &m.Ctime, &m.IsVisible, &m.ToUid)
 		if err != nil {
 			log.Log.Errorf("err:%s", err)
 			return nil, err
@@ -79,10 +80,10 @@ func GetReplyListByCommentIds(commentIds []uint64, page, pageSize int32) ([]*Rep
 	return list, nil
 }
 
-func AddReply(uid, reply string, commentId uint64) error {
+func AddReply(uid, reply, toUid string, commentId uint64) error {
 	t := time.Now().Unix()
-	sql := fmt.Sprintf("insert into reply_tab(`comment_id`, `reply`,`uid`,`ctime`, `is_visible`) values(%d, '%s','%s',%d, %d)",
-		commentId, reply, uid, t, 1)
+	sql := fmt.Sprintf("insert into reply_tab(`comment_id`, `reply`,`uid`,`ctime`, `is_visible`, `to_uid`) values(%d, '%s','%s',%d, %d, '%s')",
+		commentId, reply, uid, t, 1, toUid)
 	_, err := db.Exec(sql)
 	if err != nil {
 		return err
