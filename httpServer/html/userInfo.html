@@ -655,7 +655,7 @@
                 // 切换回复列表容器的显示状态
                 if (commentListContainer.style.display === 'none') {
                     commentListContainer.style.display = 'block';
-                    openCommentBtn.textContent = '收回评论';
+                    openCommentBtn.textContent = '收起评论';
                 } else {
                     commentListContainer.style.display = 'none';
                     openCommentBtn.textContent = '展开评论';
@@ -673,7 +673,7 @@
                     //评论昵称+时间
                     var cnick = document.createElement('span');
                     cnick.classList.add('cnick');
-                    cnick.textContent = comment.user_name+comment.CTime+"  ";
+                    cnick.textContent = comment.user_name+comment.c_time+"  ";
 
                     //评论内容
                     var ccomment= document.createElement('span');
@@ -701,7 +701,7 @@
                         // 切换回复列表容器的显示状态
                         if (replyListContainer.style.display === 'none') {
                             replyListContainer.style.display = 'block';
-                            toggleLink.textContent = '收回回复';
+                            toggleLink.textContent = '收起回复';
                         } else {
                             replyListContainer.style.display = 'none';
                             toggleLink.textContent = '展开回复';
@@ -721,7 +721,7 @@
                             //回复昵称+时间
                             var rnick = document.createElement('span');
                             rnick.classList.add('rnick');
-                            rnick.textContent = replyData.user_name+"->"+replyData.to_user_name+"  "+replyData.CTime
+                            rnick.textContent = replyData.user_name+"->"+replyData.to_user_name+"  "+replyData.c_time
                             // 创建回复元素
                             var replyElement = document.createElement('div');
                             replyElement.classList.add('reply');

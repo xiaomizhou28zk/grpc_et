@@ -28,13 +28,13 @@ type Reply struct {
 	ToUserName string `json:"to_user_name"`
 	Reply      string `json:"reply"`
 	CommentId  uint64 `json:"comment_id"`
-	Ctime      string `json:"ctime"`
+	Ctime      string `json:"c_time"`
 }
 
 type Comment struct {
 	ID        uint64   `json:"id"`
 	Comment   string   `json:"comment"`
-	CTime     string   `json:"cTime"`
+	CTime     string   `json:"c_time"`
 	MessageId uint64   `json:"message_id"`
 	ReplyList []*Reply `json:"reply_list"`
 	Uid       string   `json:"uid"`
