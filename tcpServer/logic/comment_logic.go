@@ -32,3 +32,13 @@ func (s *Server) GetCommentsByMessageIds(ctx context.Context, req *pb.GetComment
 	}
 	return rsp, nil
 }
+
+func (s *Server) SetComment(ctx context.Context, req *pb.SetCommentRequest) (*pb.SetCommentResponse, error) {
+	rsp := &pb.SetCommentResponse{}
+	err := Dao.AddComment(req.GetUid(), req.GetComment())
+	if err != nil {
+		log.Log.Errorf("SetComment err:%s", err)
+		return rsp, err
+	}
+	return rsp, nil
+}

@@ -293,3 +293,28 @@ func getReplyByCommentIdsRpc(commentIds []uint64) (*pb.GetReplyByCommentIdsRespo
 	_ = common.MyPool.Put(*conn)
 	return resp, nil
 }
+
+func setCommentRpc(uid, comment string) error {
+	cli, conn, err := getClient()
+	if err != nil {
+		log.Log.Errorf("get conn err:%s", err)
+		return err
+	}
+
+	req := &pb.SetCommentRequest{
+		Comment: proto.String(comment),
+		Uid:     proto.String(uid),
+	}
+
+	resp, err := cli.SetComment(context.Background(), req)
+	if err != nil {
+		log.Log.Errorf("SetComment err:%s", err)
+		return err
+	}
+	fmt.Println("setCommentRpc rpc:", resp.GetRet())
+	if resp.GetRet() != 0 {
+		return errors.New("setCommentRpc error")
+	}
+	_ = common.MyPool.Put(*conn)
+	return nil
+}

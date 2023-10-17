@@ -264,3 +264,46 @@ func DeleteMessage(w http.ResponseWriter, r *http.Request) {
 	msg, _ := json.Marshal(rsp)
 	_, _ = w.Write(msg)
 }
+
+type SetCommentRequest struct {
+	CommentInfo string `json:"comment_info"`
+}
+type SetCommentResponse struct {
+	Ret int32  `json:"ret"`
+	Msg string `json:"msg"`
+	Url string `json:"url"`
+}
+
+func SetComment(w http.ResponseWriter, r *http.Request) {
+	rsp := SetCommentResponse{}
+
+	// 解析 JSON 参数
+	var req SetCommentRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		rsp.Ret = common.MissingParams
+		msg, _ := json.Marshal(rsp)
+		_, _ = w.Write(msg)
+		return
+	}
+
+	sessionInfo, status := checkSession(r)
+	if !status {
+		log.Log.Errorf("get session err")
+		rsp.Ret = common.InvalidSession
+		rsp.Url = config.Config.LoginPage
+		msg, _ := json.Marshal(rsp)
+		_, _ = w.Write(msg)
+		return
+	}
+
+	err := setCommentRpc(sessionInfo.UID, req.CommentInfo)
+	if err != nil {
+		log.Log.Errorf("setCommentRpc err")
+		rsp.Ret = common.ServerErrCode
+		msg, _ := json.Marshal(rsp)
+		_, _ = w.Write(msg)
+	}
+
+	msg, _ := json.Marshal(rsp)
+	_, _ = w.Write(msg)
+}

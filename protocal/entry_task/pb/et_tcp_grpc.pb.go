@@ -33,6 +33,7 @@ type EntryTaskClient interface {
 	DeleteMessage(ctx context.Context, in *DeleteMessageRequest, opts ...grpc.CallOption) (*DeleteMessageResponse, error)
 	GetCommentsByMessageIds(ctx context.Context, in *GetCommentsByMessageIdsRequest, opts ...grpc.CallOption) (*GetCommentsByMessageIdsResponse, error)
 	GetReplyByCommentIds(ctx context.Context, in *GetReplyByCommentIdsRequest, opts ...grpc.CallOption) (*GetReplyByCommentIdsResponse, error)
+	SetComment(ctx context.Context, in *SetCommentRequest, opts ...grpc.CallOption) (*SetCommentResponse, error)
 }
 
 type entryTaskClient struct {
@@ -142,6 +143,15 @@ func (c *entryTaskClient) GetReplyByCommentIds(ctx context.Context, in *GetReply
 	return out, nil
 }
 
+func (c *entryTaskClient) SetComment(ctx context.Context, in *SetCommentRequest, opts ...grpc.CallOption) (*SetCommentResponse, error) {
+	out := new(SetCommentResponse)
+	err := c.cc.Invoke(ctx, "/entry_task.EntryTask/SetComment", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // EntryTaskServer is the server API for EntryTask service.
 // All implementations should embed UnimplementedEntryTaskServer
 // for forward compatibility
@@ -157,6 +167,7 @@ type EntryTaskServer interface {
 	DeleteMessage(context.Context, *DeleteMessageRequest) (*DeleteMessageResponse, error)
 	GetCommentsByMessageIds(context.Context, *GetCommentsByMessageIdsRequest) (*GetCommentsByMessageIdsResponse, error)
 	GetReplyByCommentIds(context.Context, *GetReplyByCommentIdsRequest) (*GetReplyByCommentIdsResponse, error)
+	SetComment(context.Context, *SetCommentRequest) (*SetCommentResponse, error)
 }
 
 // UnimplementedEntryTaskServer should be embedded to have forward compatible implementations.
@@ -195,6 +206,9 @@ func (UnimplementedEntryTaskServer) GetCommentsByMessageIds(context.Context, *Ge
 }
 func (UnimplementedEntryTaskServer) GetReplyByCommentIds(context.Context, *GetReplyByCommentIdsRequest) (*GetReplyByCommentIdsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetReplyByCommentIds not implemented")
+}
+func (UnimplementedEntryTaskServer) SetComment(context.Context, *SetCommentRequest) (*SetCommentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetComment not implemented")
 }
 
 // UnsafeEntryTaskServer may be embedded to opt out of forward compatibility for this service.
@@ -406,6 +420,24 @@ func _EntryTask_GetReplyByCommentIds_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _EntryTask_SetComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetCommentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EntryTaskServer).SetComment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/entry_task.EntryTask/SetComment",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EntryTaskServer).SetComment(ctx, req.(*SetCommentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // EntryTask_ServiceDesc is the grpc.ServiceDesc for EntryTask service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -456,6 +488,10 @@ var EntryTask_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetReplyByCommentIds",
 			Handler:    _EntryTask_GetReplyByCommentIds_Handler,
+		},
+		{
+			MethodName: "SetComment",
+			Handler:    _EntryTask_SetComment_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

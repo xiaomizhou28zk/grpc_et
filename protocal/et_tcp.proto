@@ -133,6 +133,14 @@ message GetReplyByCommentIdsResponse {
   repeated CommentReplyItem list = 2;
 }
 
+message SetCommentRequest {
+  optional string comment = 1;
+  optional string uid = 2;
+}
+message SetCommentResponse {
+  optional int32 ret = 1;
+}
+
 service EntryTask {
   rpc GetUserInfo (GetUserInfoRequest) returns (GetUserInfoResponse) {}
   rpc UpdateUserInfo (UpdateUserInfoRequest) returns (UpdateUserInfoResponse) {}
@@ -146,4 +154,5 @@ service EntryTask {
 
   rpc GetCommentsByMessageIds(GetCommentsByMessageIdsRequest) returns(GetCommentsByMessageIdsResponse) {}
   rpc GetReplyByCommentIds(GetReplyByCommentIdsRequest) returns(GetReplyByCommentIdsResponse) {}
+  rpc SetComment(SetCommentRequest)returns(SetCommentResponse) {}
 }
