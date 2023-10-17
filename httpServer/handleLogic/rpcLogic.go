@@ -294,7 +294,7 @@ func getReplyByCommentIdsRpc(commentIds []uint64) (*pb.GetReplyByCommentIdsRespo
 	return resp, nil
 }
 
-func setCommentRpc(uid, comment string) error {
+func setCommentRpc(uid, comment string, msgId int64) error {
 	cli, conn, err := getClient()
 	if err != nil {
 		log.Log.Errorf("get conn err:%s", err)
@@ -302,8 +302,9 @@ func setCommentRpc(uid, comment string) error {
 	}
 
 	req := &pb.SetCommentRequest{
-		Comment: proto.String(comment),
-		Uid:     proto.String(uid),
+		Comment:   proto.String(comment),
+		Uid:       proto.String(uid),
+		MessageId: proto.Int64(msgId),
 	}
 
 	resp, err := cli.SetComment(context.Background(), req)

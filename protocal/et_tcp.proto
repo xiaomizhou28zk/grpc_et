@@ -135,7 +135,8 @@ message GetReplyByCommentIdsResponse {
 
 message SetCommentRequest {
   optional string comment = 1;
-  optional string uid = 2;
+  optional int64 message_id = 2;
+  optional string uid = 3;
 }
 message SetCommentResponse {
   optional int32 ret = 1;

@@ -627,7 +627,7 @@
                 // 将新的评论元素添加到评论区容器中
                 commentContainer.appendChild(commentElement);
 
-                setCommentFunc(commentText)
+                setCommentFunc(commentText, message.id)
 
                 // 清空评论输入框
                 commentInput.value = '';
@@ -826,7 +826,7 @@
     }
 
     //发布评论
-     function setCommentFunc(comment) {
+     function setCommentFunc(comment, msgId) {
          // Create a new XMLHttpRequest object
          var xhr = new XMLHttpRequest();
          // Define the request URL and method
@@ -838,6 +838,7 @@
          // 构建请求参数对象
          var params = {
              comment_info:comment,
+             message_id:msgId
          };
 
          // Create the request body

@@ -267,6 +267,7 @@ func DeleteMessage(w http.ResponseWriter, r *http.Request) {
 
 type SetCommentRequest struct {
 	CommentInfo string `json:"comment_info"`
+	MessageId   int64  `json:"message_id"`
 }
 type SetCommentResponse struct {
 	Ret int32  `json:"ret"`
@@ -296,7 +297,7 @@ func SetComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := setCommentRpc(sessionInfo.UID, req.CommentInfo)
+	err := setCommentRpc(sessionInfo.UID, req.CommentInfo, req.MessageId)
 	if err != nil {
 		log.Log.Errorf("setCommentRpc err")
 		rsp.Ret = common.ServerErrCode
